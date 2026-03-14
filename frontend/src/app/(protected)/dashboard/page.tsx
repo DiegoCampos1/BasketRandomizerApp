@@ -6,7 +6,7 @@ import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
+import CardActionArea from "@mui/material/CardActionArea";
 import PeopleIcon from "@mui/icons-material/People";
 import SportsBasketballIcon from "@mui/icons-material/SportsBasketball";
 import HistoryIcon from "@mui/icons-material/History";
@@ -37,46 +37,56 @@ export default function DashboardPage() {
 
       <Box className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 mt-2">
         <Card>
-          <CardContent className="flex items-center gap-4 p-6">
-            <PeopleIcon sx={{ fontSize: 48, color: "secondary.main" }} />
-            <Box>
-              <Typography variant="h3" className="font-bold">
-                {playerCount}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Jogadores cadastrados
-              </Typography>
-            </Box>
-          </CardContent>
+          <CardActionArea onClick={() => router.push("/players")}>
+            <CardContent className="flex items-center gap-4 p-6">
+              <PeopleIcon sx={{ fontSize: 48, color: "secondary.main" }} />
+              <Box>
+                <Typography variant="h3" className="font-bold">
+                  {playerCount}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Jogadores cadastrados
+                </Typography>
+              </Box>
+            </CardContent>
+          </CardActionArea>
         </Card>
 
         <Card>
-          <CardContent className="flex items-center gap-4 p-6">
-            <HistoryIcon sx={{ fontSize: 48, color: "secondary.main" }} />
-            <Box>
-              <Typography variant="h3" className="font-bold">
-                {divisionCount}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Divisões realizadas
-              </Typography>
-            </Box>
-          </CardContent>
+          <CardActionArea onClick={() => router.push("/history")}>
+            <CardContent className="flex items-center gap-4 p-6">
+              <HistoryIcon sx={{ fontSize: 48, color: "secondary.main" }} />
+              <Box>
+                <Typography variant="h3" className="font-bold">
+                  {divisionCount}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Divisões realizadas
+                </Typography>
+              </Box>
+            </CardContent>
+          </CardActionArea>
         </Card>
 
-        <Card>
-          <CardContent className="flex flex-col items-center gap-4 p-6">
-            <SportsBasketballIcon
-              sx={{ fontSize: 48, color: "primary.main" }}
-            />
-            <Button
-              variant="contained"
-              size="large"
-              onClick={() => router.push("/division")}
-            >
-              Dividir Times
-            </Button>
-          </CardContent>
+        <Card sx={{ height: "100%" }}>
+          <CardActionArea
+            onClick={() => router.push("/division")}
+            sx={{ height: "100%" }}
+          >
+            <CardContent className="flex items-center gap-4 p-6 h-full">
+              <SportsBasketballIcon
+                sx={{ fontSize: 48, color: "primary.main" }}
+              />
+              <Box>
+                <Typography variant="h6" className="font-bold">
+                  Dividir Times
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Montar as equipes do dia
+                </Typography>
+              </Box>
+            </CardContent>
+          </CardActionArea>
         </Card>
       </Box>
     </Box>
