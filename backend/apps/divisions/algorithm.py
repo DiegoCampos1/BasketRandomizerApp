@@ -177,6 +177,10 @@ def divide_four_teams(players: list[PlayerProfile]) -> list[TeamSlot]:
         remaining_sub = _pre_assign_tall_centers(group_players, sub_teams)
         _serpentine_draft(remaining_sub, sub_teams)
 
+        # Garantir que o time 1 tenha mais jogadores (ou igual) que o time 2
+        if len(sub2.players) > len(sub1.players):
+            sub1.players, sub2.players = sub2.players, sub1.players
+
         final_teams.extend(sub_teams)
 
     return final_teams
@@ -193,6 +197,9 @@ def divide_teams(players: list[PlayerProfile], mode: str) -> list[TeamSlot]:
     Returns:
         List of TeamSlot objects with assigned players
     """
+    if len(players) > 20:
+        raise ValueError("Máximo de 20 jogadores por divisão.")
+
     if mode == "2_teams":
         if len(players) < 4:
             raise ValueError("Mínimo de 4 jogadores para dividir em 2 times.")

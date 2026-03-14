@@ -30,7 +30,7 @@ export default function DashboardPage() {
   }, []);
 
   return (
-    <Box gap={1}>
+    <Box gap={2} className="flex flex-col">
       <Typography variant="h4" className="mb-6">
         Olá, {user?.first_name || user?.username}!
       </Typography>

@@ -29,7 +29,7 @@ export default function HistoryPage() {
   }, [loadDivisions]);
 
   return (
-    <Box>
+    <Box gap={2} className="flex flex-col">
       <Typography variant="h4" className="mb-6">
         Histórico de Divisões
       </Typography>

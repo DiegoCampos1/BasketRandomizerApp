@@ -107,8 +107,8 @@ export default function PlayersPage() {
 
   return (
     <Box>
-      <Box className="mb-6 flex items-center justify-between">
-        <Box className="flex items-center gap-3">
+      <Box className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <Box className="flex items-center justify-between sm:justify-start gap-3">
           <Typography variant="h4" className="font-bold">Jogadores</Typography>
           {players.length > 0 && (
             <Chip
@@ -123,6 +123,7 @@ export default function PlayersPage() {
           variant="contained"
           startIcon={<AddIcon />}
           onClick={openCreate}
+          className="w-full sm:w-auto"
         >
           Adicionar Jogador
         </Button>

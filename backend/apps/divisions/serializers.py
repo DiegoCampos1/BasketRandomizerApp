@@ -58,6 +58,7 @@ class DivisionCreateSerializer(serializers.Serializer):
     player_ids = serializers.ListField(
         child=serializers.UUIDField(),
         min_length=4,
+        max_length=20,
     )
     mode = serializers.ChoiceField(choices=Division.Mode.choices)
     date = serializers.DateField()
@@ -70,6 +71,9 @@ class DivisionCreateSerializer(serializers.Serializer):
             raise serializers.ValidationError("Mínimo de 4 jogadores para 2 times.")
         if mode == "4_teams" and player_count < 8:
             raise serializers.ValidationError("Mínimo de 8 jogadores para 4 times.")
+
+        if player_count > 20:
+            raise serializers.ValidationError("Máximo de 20 jogadores por divisão.")
 
         if len(set(data["player_ids"])) != player_count:
             raise serializers.ValidationError("Jogadores duplicados na lista.")

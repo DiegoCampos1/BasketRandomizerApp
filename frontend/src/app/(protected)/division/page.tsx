@@ -19,8 +19,14 @@ import {
   createDivision,
   swapPlayers as swapPlayersApi,
 } from "@/lib/api/divisions";
-import { Player, POSITION_LABELS, HEIGHT_CATEGORY_LABELS } from "@/types/player";
+import {
+  Player,
+  POSITION_LABELS,
+  HEIGHT_CATEGORY_LABELS,
+} from "@/types/player";
 import { Division, DivisionMode, Team } from "@/types/division";
+
+const MAX_PLAYERS = 20;
 
 export default function DivisionPage() {
   const [players, setPlayers] = useState<Player[]>([]);
@@ -45,6 +51,11 @@ export default function DivisionPage() {
   }, [loadPlayers]);
 
   const togglePlayer = (id: string) => {
+    if (!selectedIds.has(id) && selectedIds.size >= MAX_PLAYERS) {
+      setError(`Máximo de ${MAX_PLAYERS} jogadores por divisão.`);
+      return;
+    }
+    setError("");
     setSelectedIds((prev) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
@@ -54,7 +65,15 @@ export default function DivisionPage() {
   };
 
   const selectAll = () => {
-    setSelectedIds(new Set(players.map((p) => p.id)));
+    const ids = players.map((p) => p.id).slice(0, MAX_PLAYERS);
+    setSelectedIds(new Set(ids));
+    if (players.length > MAX_PLAYERS) {
+      setError(
+        `Máximo de ${MAX_PLAYERS} jogadores. Apenas os ${MAX_PLAYERS} primeiros foram selecionados.`,
+      );
+    } else {
+      setError("");
+    }
   };
 
   const deselectAll = () => {
@@ -67,7 +86,14 @@ export default function DivisionPage() {
 
     const minPlayers = mode === "2_teams" ? 4 : 8;
     if (selectedIds.size < minPlayers) {
-      setError(`Selecione pelo menos ${minPlayers} jogadores para ${mode === "2_teams" ? "2" : "4"} times.`);
+      setError(
+        `Selecione pelo menos ${minPlayers} jogadores para ${mode === "2_teams" ? "2" : "4"} times.`,
+      );
+      return;
+    }
+
+    if (selectedIds.size > MAX_PLAYERS) {
+      setError(`Máximo de ${MAX_PLAYERS} jogadores por divisão.`);
       return;
     }
 
@@ -130,10 +156,6 @@ export default function DivisionPage() {
             <TeamCard key={team.id} team={team} />
           ))}
         </Box>
-
-        <Typography variant="body2" color="text.secondary" className="mt-4">
-          Para trocar jogadores entre times, use o endpoint de swap via API (drag-and-drop em breve).
-        </Typography>
       </Box>
     );
   }
@@ -168,15 +190,35 @@ export default function DivisionPage() {
 
       {/* Player selection */}
       <Box className="mb-6">
-        <Box className="mb-2 flex items-center justify-between">
+        <Box className="mb-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <Typography variant="subtitle1" className="font-semibold">
-            Jogadores presentes ({selectedIds.size} selecionados)
+            Jogadores presentes ({selectedIds.size}/{MAX_PLAYERS} selecionados)
           </Typography>
           <Box className="flex gap-2">
-            <Button size="small" onClick={selectAll}>
+            <Button
+              size="small"
+              variant="outlined"
+              onClick={selectAll}
+              sx={{
+                "@media (min-width: 640px)": {
+                  border: "none",
+                  "&:hover": { border: "none" },
+                },
+              }}
+            >
               Selecionar todos
             </Button>
-            <Button size="small" onClick={deselectAll}>
+            <Button
+              size="small"
+              variant="outlined"
+              onClick={deselectAll}
+              sx={{
+                "@media (min-width: 640px)": {
+                  border: "none",
+                  "&:hover": { border: "none" },
+                },
+              }}
+            >
               Limpar
             </Button>
           </Box>
