@@ -39,22 +39,19 @@ export default function Sidebar({ open, onClose, variant }: SidebarProps) {
   const user = useAuthStore((s) => s.user);
 
   const drawerContent = (
-    <Box className="flex h-full flex-col">
-      <Box className="flex items-center gap-2 px-4 py-3">
+    <Box className="flex h-full flex-col px-1">
+      <Box className="flex items-center gap-2 px-4 py-3 h-20">
         <SportsBasketballIcon sx={{ color: "primary.main", fontSize: 32 }} />
         <Box>
-          <Typography variant="h6" className="leading-tight font-bold">
-            Sorteador
-          </Typography>
-          <Typography variant="caption" color="text.secondary">
+          <Typography variant="subtitle1" color="text.secondary">
             {user?.organization?.name || ""}
           </Typography>
         </Box>
       </Box>
 
-      <Divider />
+      <Divider sx={{ ml: -1, mr: -1 }} />
 
-      <List className="flex-1 px-2 pt-2">
+      <List className="flex-1 px-3 pt-2">
         {navItems.map((item) => {
           const isActive = pathname === item.href;
           return (
@@ -65,7 +62,7 @@ export default function Sidebar({ open, onClose, variant }: SidebarProps) {
                 onClick={onClose}
                 selected={isActive}
                 sx={{
-                  borderRadius: 2,
+                  borderRadius: 1.5,
                   "&.Mui-selected": {
                     backgroundColor: "primary.main",
                     color: "white",
@@ -84,9 +81,9 @@ export default function Sidebar({ open, onClose, variant }: SidebarProps) {
 
       <Divider />
 
-      <List className="px-2 pb-2">
+      <List className="px-3 pb-2">
         <ListItem disablePadding>
-          <ListItemButton onClick={logout} sx={{ borderRadius: 2 }}>
+          <ListItemButton onClick={logout} sx={{ borderRadius: 1.5 }}>
             <ListItemIcon sx={{ minWidth: 40 }}>
               <LogoutIcon />
             </ListItemIcon>
