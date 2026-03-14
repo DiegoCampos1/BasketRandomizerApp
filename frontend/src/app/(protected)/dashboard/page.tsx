@@ -21,17 +21,21 @@ export default function DashboardPage() {
   const [divisionCount, setDivisionCount] = useState(0);
 
   useEffect(() => {
-    getPlayers().then((p) => setPlayerCount(p.length)).catch(() => {});
-    getDivisions().then((d) => setDivisionCount(d.length)).catch(() => {});
+    getPlayers()
+      .then((p) => setPlayerCount(p.length))
+      .catch(() => {});
+    getDivisions()
+      .then((d) => setDivisionCount(d.length))
+      .catch(() => {});
   }, []);
 
   return (
-    <Box>
+    <Box gap={1}>
       <Typography variant="h4" className="mb-6">
         Olá, {user?.first_name || user?.username}!
       </Typography>
 
-      <Box className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <Box className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 mt-2">
         <Card>
           <CardContent className="flex items-center gap-4 p-6">
             <PeopleIcon sx={{ fontSize: 48, color: "secondary.main" }} />

@@ -40,7 +40,7 @@ export default function Sidebar({ open, onClose, variant }: SidebarProps) {
 
   const drawerContent = (
     <Box className="flex h-full flex-col">
-      <Box className="flex items-center gap-2 p-4">
+      <Box className="flex items-center gap-2 px-4 py-3">
         <SportsBasketballIcon sx={{ color: "primary.main", fontSize: 32 }} />
         <Box>
           <Typography variant="h6" className="leading-tight font-bold">

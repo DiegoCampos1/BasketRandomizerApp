@@ -145,7 +145,7 @@ export default function PlayersPage() {
       ) : (
         <Box className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {players.map((player) => (
-            <Card key={player.id} sx={{ cursor: "default" }}>
+            <Card key={player.id} sx={{ cursor: "pointer" }} onClick={() => openEdit(player)}>
               <CardContent className="p-5">
                 <Box className="mb-3 flex items-start justify-between">
                   <Typography variant="subtitle1" className="font-bold leading-tight">
@@ -154,14 +154,14 @@ export default function PlayersPage() {
                   <Box className="ml-2 flex shrink-0">
                     <IconButton
                       size="small"
-                      onClick={() => openEdit(player)}
+                      onClick={(e) => { e.stopPropagation(); openEdit(player); }}
                       sx={{ color: "text.secondary" }}
                     >
                       <EditIcon fontSize="small" />
                     </IconButton>
                     <IconButton
                       size="small"
-                      onClick={() => handleDelete(player.id)}
+                      onClick={(e) => { e.stopPropagation(); handleDelete(player.id); }}
                       sx={{ color: "text.secondary" }}
                     >
                       <DeleteIcon fontSize="small" />

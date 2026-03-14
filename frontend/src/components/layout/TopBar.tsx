@@ -43,9 +43,10 @@ export default function TopBar({ onMenuClick, showMenuButton }: TopBarProps) {
         borderBottom: "1px solid",
         borderColor: "divider",
         backgroundColor: "background.paper",
+        minHeight: 80,
       }}
     >
-      <Toolbar className="px-6">
+      <Toolbar className="px-6" sx={{ minHeight: 68 }}>
         {showMenuButton && (
           <IconButton edge="start" onClick={onMenuClick} className="mr-3">
             <MenuIcon />
@@ -55,7 +56,11 @@ export default function TopBar({ onMenuClick, showMenuButton }: TopBarProps) {
           {pageTitle}
         </Typography>
         <Box className="flex items-center gap-3">
-          <Typography variant="body2" color="text.secondary" className="hidden sm:block">
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            className="hidden sm:block"
+          >
             {user?.first_name || user?.username}
           </Typography>
           <Avatar
