@@ -46,7 +46,13 @@ const theme = createTheme({
     MuiCard: {
       styleOverrides: {
         root: {
-          boxShadow: "0 2px 12px rgba(0,0,0,0.08)",
+          boxShadow: "0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06)",
+          border: "1px solid rgba(0,0,0,0.06)",
+          transition: "box-shadow 0.2s ease, transform 0.2s ease",
+          "&:hover": {
+            boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
+            transform: "translateY(-1px)",
+          },
         },
       },
     },

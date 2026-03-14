@@ -15,6 +15,7 @@ import DialogActions from "@mui/material/DialogActions";
 import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
 import Rating from "@mui/material/Rating";
+import Divider from "@mui/material/Divider";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -107,7 +108,17 @@ export default function PlayersPage() {
   return (
     <Box>
       <Box className="mb-6 flex items-center justify-between">
-        <Typography variant="h4">Jogadores</Typography>
+        <Box className="flex items-center gap-3">
+          <Typography variant="h4" className="font-bold">Jogadores</Typography>
+          {players.length > 0 && (
+            <Chip
+              label={`${players.length} cadastrados`}
+              size="small"
+              color="secondary"
+              variant="outlined"
+            />
+          )}
+        </Box>
         <Button
           variant="contained"
           startIcon={<AddIcon />}
@@ -134,51 +145,57 @@ export default function PlayersPage() {
       ) : (
         <Box className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {players.map((player) => (
-            <Card key={player.id}>
-              <CardContent className="p-4">
-                <Box className="mb-2 flex items-start justify-between">
-                  <Typography variant="h6" className="font-semibold">
+            <Card key={player.id} sx={{ cursor: "default" }}>
+              <CardContent className="p-5">
+                <Box className="mb-3 flex items-start justify-between">
+                  <Typography variant="subtitle1" className="font-bold leading-tight">
                     {player.name}
                   </Typography>
-                  <Box>
-                    <IconButton size="small" onClick={() => openEdit(player)}>
+                  <Box className="ml-2 flex shrink-0">
+                    <IconButton
+                      size="small"
+                      onClick={() => openEdit(player)}
+                      sx={{ color: "text.secondary" }}
+                    >
                       <EditIcon fontSize="small" />
                     </IconButton>
                     <IconButton
                       size="small"
                       onClick={() => handleDelete(player.id)}
+                      sx={{ color: "text.secondary" }}
                     >
                       <DeleteIcon fontSize="small" />
                     </IconButton>
                   </Box>
                 </Box>
 
-                <Box className="flex flex-wrap gap-2">
+                <Box className="mb-3 flex flex-wrap gap-1.5">
                   <Chip
                     label={POSITION_LABELS[player.position]}
                     size="small"
                     variant="outlined"
+                    sx={{ fontWeight: 500 }}
                   />
                   <Chip
                     label={HEIGHT_CATEGORY_LABELS[player.height_category]}
                     size="small"
                     color={HEIGHT_COLORS[player.height_category]}
+                    sx={{ fontWeight: 500 }}
                   />
                   <Chip
                     label={`${player.height_cm} cm`}
                     size="small"
                     variant="outlined"
+                    sx={{ fontWeight: 500 }}
                   />
                 </Box>
 
-                <Box className="mt-2">
-                  <Rating
-                    value={player.quality}
-                    readOnly
-                    size="small"
-                    max={5}
-                  />
-                </Box>
+                <Rating
+                  value={player.quality}
+                  readOnly
+                  size="small"
+                  max={5}
+                />
               </CardContent>
             </Card>
           ))}
@@ -192,10 +209,11 @@ export default function PlayersPage() {
         maxWidth="sm"
         fullWidth
       >
-        <DialogTitle>
+        <DialogTitle className="font-bold">
           {editingPlayer ? "Editar Jogador" : "Novo Jogador"}
         </DialogTitle>
-        <DialogContent className="flex flex-col gap-4 pt-4">
+        <Divider />
+        <DialogContent className="flex flex-col gap-4" sx={{ pt: 3 }}>
           <TextField
             label="Nome"
             value={form.name}
@@ -245,9 +263,12 @@ export default function PlayersPage() {
             />
           </Box>
         </DialogContent>
-        <DialogActions className="p-4">
-          <Button onClick={() => setDialogOpen(false)}>Cancelar</Button>
-          <Button variant="contained" onClick={handleSave}>
+        <Divider />
+        <DialogActions className="px-6 py-4">
+          <Button onClick={() => setDialogOpen(false)} color="inherit">
+            Cancelar
+          </Button>
+          <Button variant="contained" onClick={handleSave} size="large">
             {editingPlayer ? "Salvar" : "Criar"}
           </Button>
         </DialogActions>

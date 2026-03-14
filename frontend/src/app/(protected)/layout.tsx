@@ -41,7 +41,7 @@ export default function ProtectedLayout({
       <Box
         component="main"
         className="flex flex-1 flex-col"
-        sx={{ ml: isDesktop ? `${DRAWER_WIDTH}px` : 0 }}
+        sx={{ ml: 0 }}
       >
         <TopBar
           onMenuClick={() => setMobileOpen(true)}
