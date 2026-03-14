@@ -43,7 +43,7 @@ export default function TopBar({ onMenuClick, showMenuButton }: TopBarProps) {
         borderBottom: "1px solid",
         borderColor: "divider",
         backgroundColor: "background.paper",
-        minHeight: 80,
+        minHeight: 81,
       }}
     >
       <Toolbar className="px-6" sx={{ minHeight: 68 }}>
