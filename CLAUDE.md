@@ -1,83 +1,83 @@
 # Sorteador de Times - Basketball Team Divider
 
-## Sobre o Projeto
-Aplicação para divisão equilibrada de times em peladas de basquete. Resolve a dor de dividir times manualmente de forma desbalanceada. Organização de referência: **Boomerangs Basketball**.
+## About the Project
+Application for balanced team division in pickup basketball games. Solves the pain of manually dividing teams in an unbalanced way. Reference organization: **Boomerangs Basketball**.
 
 ## Stack
-- **Monorepo**: `backend/` + `frontend/` na mesma raiz
+- **Monorepo**: `backend/` + `frontend/` in the same root
 - **Backend**: Django REST Framework (Python)
 - **Frontend**: Next.js 14+ (App Router) + MUI + Tailwind CSS
-- **Banco**: PostgreSQL 16
+- **Database**: PostgreSQL 16
 - **Auth**: JWT via djangorestframework-simplejwt
 - **Infra**: Docker Compose (PostgreSQL + Django + Next.js)
 
-## Tema Visual
-Cores da NBA:
-- Vermelho: `#C8102E`
-- Azul: `#1D428A`
-- Branco: `#FFFFFF`
-- MUI com `enableCssLayer: true` + Tailwind com `preflight: false`
+## Visual Theme
+NBA colors:
+- Red: `#C8102E`
+- Blue: `#1D428A`
+- White: `#FFFFFF`
+- MUI with `enableCssLayer: true` + Tailwind with `preflight: false`
 
-## Regras de Negócio
+## Business Rules
 
-### Jogadores
-- **Posições**: Guard, Forward, Center (3 simplificadas)
-- **Qualidade**: Nota de 1 a 5
-- **Altura**: Pequeno (≤176cm), Médio (177-187cm), Alto (>187cm) — derivada automaticamente do height_cm
+### Players
+- **Positions**: Guard, Forward, Center (3 simplified)
+- **Quality**: Rating from 1 to 5
+- **Height**: Small (≤176cm), Medium (177-187cm), Tall (>187cm) — automatically derived from height_cm
 
-### Divisão de Times
-- **Modo 2 times**: Mínimo 4 jogadores
-- **Modo 4 times**: Mínimo 8 jogadores. Gera 2 grupos (Vermelho/Preto) com 2 subequipes cada
-  - Jogo 1: Vermelho 1 vs Preto 1
-  - Jogo 2: Vermelho 2 vs Preto 2 (placar continua)
-- Times podem ter tamanhos desiguais
-- Algoritmo serpentine draft com balanceamento: qualidade (peso 3.0), posição (1.5), altura (1.0)
-- Pivôs altos de qualidade similar são separados automaticamente
-- Antes de dividir, seleciona quais jogadores estão presentes no dia
-- Após divisão, permite ajuste manual via drag-and-drop
-- Divisões são salvas com histórico (data)
+### Team Division
+- **2-team mode**: Minimum 4 players
+- **4-team mode**: Minimum 8 players. Creates 2 groups (Red/Black) with 2 subteams each
+  - Game 1: Red 1 vs Black 1
+  - Game 2: Red 2 vs Black 2 (score carries over)
+- Teams can have unequal sizes
+- Serpentine draft algorithm with balancing: quality (weight 3.0), position (1.5), height (1.0)
+- Tall centers with similar quality are automatically separated
+- Before dividing, select which players are present for the day
+- After division, allows manual adjustment via drag-and-drop
+- Divisions are saved with history (date)
 
-### Organização e Permissões
-- Login por organização (multi-tenant)
-- Todos os membros podem fazer tudo (sem roles por enquanto)
-- Dados filtrados automaticamente por organização do usuário (OrganizationQuerySetMixin)
+### Organization and Permissions
+- Login by organization (multi-tenant)
+- All members can do everything (no roles for now)
+- Data automatically filtered by user's organization (OrganizationQuerySetMixin)
 
-## Estrutura do Backend
+## Backend Structure
 - `config/` — settings, urls, wsgi
-- `core/` — mixins compartilhados (OrganizationQuerySetMixin)
+- `core/` — shared mixins (OrganizationQuerySetMixin)
 - `apps/accounts/` — User (AbstractUser) + Organization
 - `apps/players/` — Player CRUD
 - `apps/divisions/` — Division, Team, TeamPlayer + algorithm.py + services.py
-- IDs são UUID em todos os models
-- AUTH_USER_MODEL = "accounts.User" (DEVE ser definido antes da 1ª migration)
+- All model IDs are UUIDs
+- AUTH_USER_MODEL = "accounts.User" (MUST be set before the first migration)
 
-## Estrutura do Frontend
-- `src/app/(auth)/` — Login, Register (sem sidebar)
-- `src/app/(protected)/` — Dashboard, Players, Division, History (com sidebar)
+## Frontend Structure
+- `src/app/(auth)/` — Login, Register (no sidebar)
+- `src/app/(protected)/` — Dashboard, Players, Division, History (with sidebar)
 - `src/components/providers/` — ThemeRegistry, AuthProvider
-- `src/lib/api/` — Axios client com JWT interceptors
+- `src/lib/api/` — Axios client with JWT interceptors
 - `src/stores/` — Zustand (auth, organization)
 - Drag-and-drop: @dnd-kit/core
 - Forms: react-hook-form + zod
-- State: zustand (sem Redux)
+- State: zustand (no Redux)
 
-## API Endpoints (prefixo /api/v1/)
-- `auth/register/` POST — criar usuário + org
+## API Endpoints (prefix /api/v1/)
+- `auth/register/` POST — create user + org
 - `auth/login/` POST — JWT login
 - `auth/refresh/` POST — refresh JWT
 - `players/` GET, POST
 - `players/<id>/` GET, PUT, DELETE
 - `divisions/` GET, POST
 - `divisions/<id>/` GET, DELETE
-- `divisions/<id>/swap/` POST — trocar jogadores entre times
+- `divisions/<id>/swap/` POST — swap players between teams
 
 ## Docker
-- `docker-compose.yml` na raiz do projeto
-- DB: postgres:16-alpine (porta 5432)
-- API: Django na porta 8000
-- Web: Next.js na porta 3000
+- `docker-compose.yml` at the project root
+- DB: postgres:16-alpine (port 5432)
+- API: Django on port 8000
+- Web: Next.js on port 3000
 
-## Convenções
-- Usar skills instaladas: django-drf, frontend-design, ui-ux-pro-max, vercel-react-best-practices, web-design-guidelines, theme-factory
-- MUI para componentes interativos, Tailwind para layout/spacing
-- Não misturar sx prop e Tailwind no mesmo elemento
+## Conventions
+- Use installed skills: django-drf, frontend-design, ui-ux-pro-max, vercel-react-best-practices, web-design-guidelines, theme-factory
+- MUI for interactive components, Tailwind for layout/spacing
+- Do not mix sx prop and Tailwind on the same element
