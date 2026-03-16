@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
@@ -8,25 +7,11 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CardActionArea from "@mui/material/CardActionArea";
 import Chip from "@mui/material/Chip";
-import { getDivisions } from "@/lib/api/divisions";
-import { DivisionListItem } from "@/types/division";
+import { useDivisions } from "@/hooks/divisions/useDivisions";
 
 export default function HistoryPage() {
   const router = useRouter();
-  const [divisions, setDivisions] = useState<DivisionListItem[]>([]);
-
-  const loadDivisions = useCallback(async () => {
-    try {
-      const data = await getDivisions();
-      setDivisions(data);
-    } catch {
-      /* empty */
-    }
-  }, []);
-
-  useEffect(() => {
-    loadDivisions();
-  }, [loadDivisions]);
+  const { data: divisions = [] } = useDivisions();
 
   return (
     <Box gap={2} className="flex flex-col">

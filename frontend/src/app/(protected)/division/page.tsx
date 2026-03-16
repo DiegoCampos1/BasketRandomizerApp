@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useState } from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
@@ -13,14 +13,9 @@ import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import Alert from "@mui/material/Alert";
 import Rating from "@mui/material/Rating";
 import ShuffleIcon from "@mui/icons-material/Shuffle";
-import SaveIcon from "@mui/icons-material/Save";
-import { getPlayers } from "@/lib/api/players";
+import { usePlayers } from "@/hooks/players/usePlayers";
+import { useDivisionMutations } from "@/hooks/divisions/useDivisionMutations";
 import {
-  createDivision,
-  swapPlayers as swapPlayersApi,
-} from "@/lib/api/divisions";
-import {
-  Player,
   POSITION_LABELS,
   HEIGHT_CATEGORY_LABELS,
 } from "@/types/player";
@@ -29,26 +24,15 @@ import { Division, DivisionMode, Team } from "@/types/division";
 const MAX_PLAYERS = 20;
 
 export default function DivisionPage() {
-  const [players, setPlayers] = useState<Player[]>([]);
+  const { data: allPlayers = [] } = usePlayers();
+  const players = allPlayers.filter((p) => p.active);
+  const { createDivision, swapPlayers } = useDivisionMutations();
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [mode, setMode] = useState<DivisionMode>("2_teams");
   const [division, setDivision] = useState<Division | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [saved, setSaved] = useState(false);
-
-  const loadPlayers = useCallback(async () => {
-    try {
-      const data = await getPlayers();
-      setPlayers(data.filter((p) => p.active));
-    } catch {
-      /* empty */
-    }
-  }, []);
-
-  useEffect(() => {
-    loadPlayers();
-  }, [loadPlayers]);
 
   const togglePlayer = (id: string) => {
     if (!selectedIds.has(id) && selectedIds.size >= MAX_PLAYERS) {
@@ -100,7 +84,7 @@ export default function DivisionPage() {
     setLoading(true);
 
     try {
-      const result = await createDivision({
+      const result = await createDivision.mutateAsync({
         player_ids: Array.from(selectedIds),
         mode,
         date: new Date().toISOString().split("T")[0],
@@ -117,9 +101,12 @@ export default function DivisionPage() {
   const handleSwap = async (playerAId: string, playerBId: string) => {
     if (!division) return;
     try {
-      const result = await swapPlayersApi(division.id, {
-        player_a_id: playerAId,
-        player_b_id: playerBId,
+      const result = await swapPlayers.mutateAsync({
+        divisionId: division.id,
+        data: {
+          player_a_id: playerAId,
+          player_b_id: playerBId,
+        },
       });
       setDivision(result);
     } catch {

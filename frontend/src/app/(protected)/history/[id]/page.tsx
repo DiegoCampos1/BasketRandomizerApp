@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
@@ -11,25 +10,17 @@ import Chip from "@mui/material/Chip";
 import Rating from "@mui/material/Rating";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import CircularProgress from "@mui/material/CircularProgress";
-import { getDivision } from "@/lib/api/divisions";
-import { Division, Team } from "@/types/division";
+import { useDivision } from "@/hooks/divisions/useDivisions";
+import { Team } from "@/types/division";
 import { POSITION_LABELS, HEIGHT_CATEGORY_LABELS } from "@/types/player";
 
 export default function DivisionDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const [division, setDivision] = useState<Division | null>(null);
-  const [loading, setLoading] = useState(true);
+  const id = params.id as string;
+  const { data: division, isLoading, isError } = useDivision(id);
 
-  useEffect(() => {
-    const id = params.id as string;
-    getDivision(id)
-      .then(setDivision)
-      .catch(() => router.push("/history"))
-      .finally(() => setLoading(false));
-  }, [params.id, router]);
-
-  if (loading) {
+  if (isLoading) {
     return (
       <Box className="flex justify-center py-12">
         <CircularProgress />
@@ -37,7 +28,10 @@ export default function DivisionDetailPage() {
     );
   }
 
-  if (!division) return null;
+  if (isError || !division) {
+    router.push("/history");
+    return null;
+  }
 
   return (
     <Box>

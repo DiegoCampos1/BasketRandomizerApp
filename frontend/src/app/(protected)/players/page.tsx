@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useState } from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
@@ -19,12 +19,8 @@ import Divider from "@mui/material/Divider";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import {
-  getPlayers,
-  createPlayer,
-  updatePlayer,
-  deletePlayer,
-} from "@/lib/api/players";
+import { usePlayers } from "@/hooks/players/usePlayers";
+import { usePlayerMutations } from "@/hooks/players/usePlayerMutations";
 import {
   Player,
   Position,
@@ -41,7 +37,8 @@ const HEIGHT_COLORS: Record<string, "default" | "primary" | "secondary"> = {
 };
 
 export default function PlayersPage() {
-  const [players, setPlayers] = useState<Player[]>([]);
+  const { data: players = [] } = usePlayers();
+  const { createPlayer, updatePlayer, deletePlayer } = usePlayerMutations();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingPlayer, setEditingPlayer] = useState<Player | null>(null);
   const [form, setForm] = useState({
@@ -50,19 +47,6 @@ export default function PlayersPage() {
     position: "guard" as Position,
     quality: 3,
   });
-
-  const loadPlayers = useCallback(async () => {
-    try {
-      const data = await getPlayers();
-      setPlayers(data);
-    } catch {
-      /* empty */
-    }
-  }, []);
-
-  useEffect(() => {
-    loadPlayers();
-  }, [loadPlayers]);
 
   const openCreate = () => {
     setEditingPlayer(null);
@@ -90,19 +74,17 @@ export default function PlayersPage() {
     };
 
     if (editingPlayer) {
-      await updatePlayer(editingPlayer.id, data);
+      await updatePlayer.mutateAsync({ id: editingPlayer.id, data });
     } else {
-      await createPlayer(data);
+      await createPlayer.mutateAsync(data);
     }
 
     setDialogOpen(false);
-    loadPlayers();
   };
 
   const handleDelete = async (id: string) => {
     if (!confirm("Tem certeza que deseja excluir este jogador?")) return;
-    await deletePlayer(id);
-    loadPlayers();
+    await deletePlayer.mutateAsync(id);
   };
 
   return (

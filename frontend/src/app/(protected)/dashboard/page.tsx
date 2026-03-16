@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
@@ -11,23 +10,14 @@ import PeopleIcon from "@mui/icons-material/People";
 import SportsBasketballIcon from "@mui/icons-material/SportsBasketball";
 import HistoryIcon from "@mui/icons-material/History";
 import { useAuthStore } from "@/stores/authStore";
-import { getPlayers } from "@/lib/api/players";
-import { getDivisions } from "@/lib/api/divisions";
+import { usePlayers } from "@/hooks/players/usePlayers";
+import { useDivisions } from "@/hooks/divisions/useDivisions";
 
 export default function DashboardPage() {
   const router = useRouter();
   const user = useAuthStore((s) => s.user);
-  const [playerCount, setPlayerCount] = useState(0);
-  const [divisionCount, setDivisionCount] = useState(0);
-
-  useEffect(() => {
-    getPlayers()
-      .then((p) => setPlayerCount(p.length))
-      .catch(() => {});
-    getDivisions()
-      .then((d) => setDivisionCount(d.length))
-      .catch(() => {});
-  }, []);
+  const { data: players } = usePlayers();
+  const { data: divisions } = useDivisions();
 
   return (
     <Box gap={2} className="flex flex-col">
@@ -42,7 +32,7 @@ export default function DashboardPage() {
               <PeopleIcon sx={{ fontSize: 48, color: "secondary.main" }} />
               <Box>
                 <Typography variant="h3" className="font-bold">
-                  {playerCount}
+                  {players?.length ?? 0}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                   Jogadores cadastrados
@@ -58,7 +48,7 @@ export default function DashboardPage() {
               <HistoryIcon sx={{ fontSize: 48, color: "secondary.main" }} />
               <Box>
                 <Typography variant="h3" className="font-bold">
-                  {divisionCount}
+                  {divisions?.length ?? 0}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                   Divisões realizadas
