@@ -40,7 +40,7 @@ export default function LoginPage() {
 
   return (
     <Card className="w-full max-w-md">
-      <CardContent className="p-8">
+      <CardContent className="p-4 sm:p-6">
         <Box className="mb-6 flex flex-col items-center">
           <SportsBasketball
             sx={{ fontSize: 48, color: "primary.main", mb: 1 }}
@@ -86,16 +86,17 @@ export default function LoginPage() {
             {loading ? "Entrando..." : "Entrar"}
           </Button>
         </form>
-
-        <Typography variant="body2" className="mt-4 text-center">
-          Não tem conta?{" "}
-          <Link
-            href="/register"
-            className="font-semibold text-[#1D428A] hover:underline"
-          >
-            Cadastre-se
-          </Link>
-        </Typography>
+        <Box className="my-4">
+          <Typography variant="body2" className="mt-4 text-center">
+            Não tem conta?{" "}
+            <Link
+              href="/register"
+              className="font-semibold text-[#1D428A] hover:underline"
+            >
+              Cadastre-se
+            </Link>
+          </Typography>
+        </Box>
       </CardContent>
     </Card>
   );
