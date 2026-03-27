@@ -27,9 +27,10 @@ export default function RegisterPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleChange = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm((prev) => ({ ...prev, [field]: e.target.value }));
-  };
+  const handleChange =
+    (field: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
+      setForm((prev) => ({ ...prev, [field]: e.target.value }));
+    };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,7 +49,9 @@ export default function RegisterPage() {
       router.push("/dashboard");
     } catch (err: unknown) {
       if (err && typeof err === "object" && "response" in err) {
-        const axiosErr = err as { response?: { data?: Record<string, string[]> } };
+        const axiosErr = err as {
+          response?: { data?: Record<string, string[]> };
+        };
         const data = axiosErr.response?.data;
         if (data) {
           const messages = Object.values(data).flat().join(" ");
@@ -136,16 +139,17 @@ export default function RegisterPage() {
             {loading ? "Criando..." : "Criar Conta"}
           </Button>
         </form>
-
-        <Typography variant="body2" className="mt-4 text-center">
-          Já tem conta?{" "}
-          <Link
-            href="/login"
-            className="font-semibold text-[#1D428A] hover:underline"
-          >
-            Faça login
-          </Link>
-        </Typography>
+        <Box className="mt-4">
+          <Typography variant="body2" className="text-center">
+            Já tem conta?{" "}
+            <Link
+              href="/login"
+              className="font-semibold text-[#1D428A] hover:underline"
+            >
+              Faça login
+            </Link>
+          </Typography>
+        </Box>
       </CardContent>
     </Card>
   );

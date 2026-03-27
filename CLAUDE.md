@@ -77,7 +77,15 @@ NBA colors:
 - API: Django on port 8000
 - Web: Next.js on port 3000
 
+## Test User (for Claude)
+- **Username**: claude
+- **Email**: claude@test.com
+- **Password**: Claude@123
+- **Organization**: Boomerangs Basketball
+
 ## Conventions
+- **Mobile first**: design and develop for mobile screens first, then scale up for larger screens
 - Use installed skills: django-drf, frontend-design, ui-ux-pro-max, vercel-react-best-practices, web-design-guidelines, theme-factory
 - MUI for interactive components, Tailwind for layout/spacing
 - Do not mix sx prop and Tailwind on the same element
+- Do not save temporary screenshots or logs in the project root. Playwright MCP files go to `.playwright-mcp/` (already in .gitignore)

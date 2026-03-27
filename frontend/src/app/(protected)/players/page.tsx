@@ -16,6 +16,8 @@ import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
 import Rating from "@mui/material/Rating";
 import Divider from "@mui/material/Divider";
+import Alert from "@mui/material/Alert";
+import AlertTitle from "@mui/material/AlertTitle";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -40,6 +42,7 @@ export default function PlayersPage() {
   const { data: players = [] } = usePlayers();
   const { createPlayer, updatePlayer, deletePlayer } = usePlayerMutations();
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [showTips, setShowTips] = useState(true);
   const [editingPlayer, setEditingPlayer] = useState<Player | null>(null);
   const [form, setForm] = useState({
     name: "",
@@ -111,13 +114,38 @@ export default function PlayersPage() {
         </Button>
       </Box>
 
+      {showTips && (
+        <Alert
+          severity="info"
+          onClose={() => setShowTips(false)}
+          className="mb-4"
+        >
+          <AlertTitle className="font-bold">Dicas para um bom cadastro</AlertTitle>
+          <ul className="m-0 flex flex-col gap-1 pl-4">
+            <li>
+              <strong>Qualidade:</strong> avalie em relação aos jogadores da sua organização, não
+              a profissionais. O melhor jogador de cada posição deve receber 5 estrelas e os demais
+              devem ser avaliados em comparação a ele.
+            </li>
+            <li>
+              <strong>Altura:</strong> preencha com precisão — o algoritmo usa esse dado para
+              balancear os times.
+            </li>
+            <li>
+              <strong>Posição:</strong> cadastre a posição principal do jogador para uma melhor
+              distribuição entre os times.
+            </li>
+          </ul>
+        </Alert>
+      )}
+
       {players.length === 0 ? (
         <Card>
-          <CardContent className="py-12 text-center">
+          <CardContent className="flex flex-col items-center gap-3 py-16 text-center">
             <Typography variant="h6" color="text.secondary">
               Nenhum jogador cadastrado
             </Typography>
-            <Typography variant="body2" color="text.secondary" className="mb-4">
+            <Typography variant="body2" color="text.secondary">
               Adicione jogadores para começar a dividir os times
             </Typography>
             <Button variant="outlined" startIcon={<AddIcon />} onClick={openCreate}>
@@ -128,7 +156,18 @@ export default function PlayersPage() {
       ) : (
         <Box className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {players.map((player) => (
-            <Card key={player.id} sx={{ cursor: "pointer" }} onClick={() => openEdit(player)}>
+            <Card
+              key={player.id}
+              sx={{
+                cursor: "pointer",
+                transition: "box-shadow 0.2s ease, transform 0.2s ease",
+                "&:hover": {
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
+                  transform: "translateY(-1px)",
+                },
+              }}
+              onClick={() => openEdit(player)}
+            >
               <CardContent className="p-5">
                 <Box className="mb-3 flex items-start justify-between">
                   <Typography variant="subtitle1" className="font-bold leading-tight">

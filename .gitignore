@@ -41,3 +41,6 @@ pgdata/
 
 # OS
 Thumbs.db
+
+# Playwright MCP
+.playwright-mcp/
