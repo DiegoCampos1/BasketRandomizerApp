@@ -9,3 +9,9 @@ export const divisionKeys = {
   list: () => [...divisionKeys.all, "list"] as const,
   detail: (id: string) => [...divisionKeys.all, "detail", id] as const,
 };
+
+export const notificationKeys = {
+  all: ["notifications"] as const,
+  list: () => [...notificationKeys.all, "list"] as const,
+  unreadCount: () => [...notificationKeys.all, "unread-count"] as const,
+};

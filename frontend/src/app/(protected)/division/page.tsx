@@ -25,7 +25,7 @@ const MAX_PLAYERS = 20;
 
 export default function DivisionPage() {
   const { data: allPlayers = [] } = usePlayers();
-  const players = allPlayers.filter((p) => p.active);
+  const players = allPlayers.filter((p) => p.active && p.is_approved);
   const { createDivision, swapPlayers } = useDivisionMutations();
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [mode, setMode] = useState<DivisionMode>("2_teams");

@@ -23,6 +23,7 @@ def create_division(user, player_ids, mode, date):
         id__in=player_ids,
         organization=user.organization,
         active=True,
+        is_approved=True,
     )
 
     if players.count() != len(player_ids):

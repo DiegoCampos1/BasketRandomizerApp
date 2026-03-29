@@ -28,6 +28,18 @@ Sport Creative palette (indigo + orange):
 - **Positions**: Guard, Forward, Center (3 simplified)
 - **Quality**: Rating from 1 to 5
 - **Height**: Small (≤176cm), Medium (177-187cm), Tall (>187cm) — automatically derived from height_cm
+- **Self-registration**: Public URL `/<org-slug>/addPlayer` for players to register without login
+- **Approval flow**: Self-registered players have `is_approved=False` until admin approves with a quality rating
+- Players created by admin are auto-approved (`is_approved=True`)
+- Only approved players appear in division
+
+### Organizations
+- **Slug**: Auto-generated from org name (e.g., "Boomerangs Basketball" → "boomerangs-basketball")
+
+### Notifications
+- App `apps.notifications` with Notification model (type, title, message, related_player, is_read)
+- Created when a player self-registers (type: player_pending)
+- Polling every 30s for unread count in TopBar
 
 ### Team Division
 - **2-team mode**: Minimum 4 players
@@ -71,9 +83,16 @@ Sport Creative palette (indigo + orange):
 - `auth/refresh/` POST — refresh JWT
 - `players/` GET, POST
 - `players/<id>/` GET, PUT, DELETE
+- `players/<id>/approve/` POST — approve pending player (fields: quality)
 - `divisions/` GET, POST
 - `divisions/<id>/` GET, DELETE
 - `divisions/<id>/swap/` POST — swap players between teams
+- `notifications/` GET — list notifications
+- `notifications/<id>/` PATCH — mark notification as read
+- `notifications/unread-count/` GET — get unread count
+- `notifications/mark-all-read/` POST — mark all as read
+- `org/<slug>/players/register/` POST — public player self-registration (no auth)
+- `org/<slug>/info/` GET — public org info by slug (no auth)
 
 ## Docker
 - `docker-compose.yml` at the project root
@@ -93,3 +112,4 @@ Sport Creative palette (indigo + orange):
 - MUI for interactive components, Tailwind for layout/spacing
 - Do not mix sx prop and Tailwind on the same element
 - Do not save temporary screenshots or logs in the project root. Playwright MCP files go to `.playwright-mcp/` (already in .gitignore)
+- **Testing is mandatory**: Always create backend tests for new features/endpoints. Before finishing, run ALL existing tests (`docker compose exec api python manage.py test`) to ensure nothing is broken. Never ship code without verifying tests pass.

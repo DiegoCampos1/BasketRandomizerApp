@@ -16,10 +16,11 @@ class PlayerSerializer(serializers.ModelSerializer):
             "position",
             "quality",
             "active",
+            "is_approved",
             "created_at",
             "updated_at",
         ]
-        read_only_fields = ["id", "height_category", "created_at", "updated_at"]
+        read_only_fields = ["id", "height_category", "is_approved", "created_at", "updated_at"]
 
     def validate_quality(self, value):
         if value < 1 or value > 5:
@@ -30,3 +31,22 @@ class PlayerSerializer(serializers.ModelSerializer):
         if value < 100 or value > 250:
             raise serializers.ValidationError("Altura deve ser entre 100 e 250 cm.")
         return value
+
+
+class PublicPlayerSerializer(serializers.Serializer):
+    """Serializer for public player self-registration (no auth required)."""
+
+    name = serializers.CharField(max_length=255)
+    height_cm = serializers.FloatField()
+    position = serializers.ChoiceField(choices=Player.Position.choices)
+
+    def validate_height_cm(self, value):
+        if value < 100 or value > 250:
+            raise serializers.ValidationError("Altura deve ser entre 100 e 250 cm.")
+        return value
+
+
+class ApprovePlayerSerializer(serializers.Serializer):
+    """Serializer for approving a pending player."""
+
+    quality = serializers.IntegerField(min_value=1, max_value=5)

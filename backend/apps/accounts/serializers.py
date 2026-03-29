@@ -11,8 +11,8 @@ class OrganizationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Organization
-        fields = ["id", "name", "created_at", "members_count"]
-        read_only_fields = ["id", "created_at"]
+        fields = ["id", "name", "slug", "created_at", "members_count"]
+        read_only_fields = ["id", "slug", "created_at"]
 
     def get_members_count(self, obj):
         return obj.members.count()

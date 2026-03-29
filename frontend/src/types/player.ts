@@ -10,6 +10,7 @@ export interface Player {
   position: Position;
   quality: number;
   active: boolean;
+  is_approved: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -23,6 +24,12 @@ export interface CreatePlayerInput {
 
 export interface UpdatePlayerInput extends Partial<CreatePlayerInput> {
   active?: boolean;
+}
+
+export interface PublicCreatePlayerInput {
+  name: string;
+  height_cm: number;
+  position: Position;
 }
 
 export const POSITION_LABELS: Record<Position, string> = {

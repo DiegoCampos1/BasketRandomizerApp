@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     "apps.accounts",
     "apps.players",
     "apps.divisions",
+    "apps.notifications",
 ]
 
 MIDDLEWARE = [

@@ -1,6 +1,7 @@
 export interface Organization {
   id: string;
   name: string;
+  slug: string;
   created_at: string;
   members_count: number;
 }

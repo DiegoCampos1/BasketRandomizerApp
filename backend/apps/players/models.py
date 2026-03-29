@@ -13,13 +13,17 @@ class Player(models.Model):
     name = models.CharField(max_length=255)
     height_cm = models.FloatField(help_text="Altura em centímetros")
     position = models.CharField(max_length=10, choices=Position.choices)
-    quality = models.IntegerField(help_text="Qualidade do jogador de 1 a 5")
+    quality = models.IntegerField(
+        help_text="Qualidade do jogador de 1 a 5",
+        default=0,
+    )
     organization = models.ForeignKey(
         "accounts.Organization",
         on_delete=models.CASCADE,
         related_name="players",
     )
     active = models.BooleanField(default=True)
+    is_approved = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
