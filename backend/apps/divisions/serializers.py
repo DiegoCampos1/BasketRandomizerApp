@@ -36,7 +36,15 @@ class DivisionListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Division
-        fields = ["id", "date", "mode", "created_by_name", "team_count", "player_count", "created_at"]
+        fields = [
+            "id",
+            "date",
+            "mode",
+            "created_by_name",
+            "team_count",
+            "player_count",
+            "created_at",
+        ]
 
     def get_created_by_name(self, obj):
         return obj.created_by.first_name or obj.created_by.email

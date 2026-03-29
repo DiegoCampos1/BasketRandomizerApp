@@ -6,18 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('players', '0001_initial'),
+        ("players", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='player',
-            name='is_approved',
+            model_name="player",
+            name="is_approved",
             field=models.BooleanField(default=True),
         ),
         migrations.AlterField(
-            model_name='player',
-            name='quality',
-            field=models.IntegerField(default=0, help_text='Qualidade do jogador de 1 a 5'),
+            model_name="player",
+            name="quality",
+            field=models.IntegerField(default=0, help_text="Qualidade do jogador de 1 a 5"),
         ),
     ]

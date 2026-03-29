@@ -15,9 +15,7 @@ from .services import create_division, swap_players
 
 
 class DivisionViewSet(OrganizationQuerySetMixin, viewsets.ModelViewSet):
-    queryset = Division.objects.prefetch_related(
-        "teams__team_players__player"
-    ).all()
+    queryset = Division.objects.prefetch_related("teams__team_players__player").all()
     http_method_names = ["get", "post", "delete", "head", "options"]
 
     def get_serializer_class(self):

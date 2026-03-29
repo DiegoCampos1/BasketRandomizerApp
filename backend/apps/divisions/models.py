@@ -33,9 +33,7 @@ class Division(models.Model):
 
 class Team(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    division = models.ForeignKey(
-        Division, on_delete=models.CASCADE, related_name="teams"
-    )
+    division = models.ForeignKey(Division, on_delete=models.CASCADE, related_name="teams")
     name = models.CharField(max_length=100)
     group = models.CharField(max_length=50, blank=True, default="")
 
@@ -48,9 +46,7 @@ class Team(models.Model):
 
 class TeamPlayer(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    team = models.ForeignKey(
-        Team, on_delete=models.CASCADE, related_name="team_players"
-    )
+    team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name="team_players")
     player = models.ForeignKey("players.Player", on_delete=models.CASCADE)
     order = models.PositiveIntegerField(default=0)
 

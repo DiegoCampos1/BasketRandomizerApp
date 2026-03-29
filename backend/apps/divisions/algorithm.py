@@ -40,13 +40,14 @@ class TeamSlot:
         return sum(1 for p in self.players if p.height_category == height_category)
 
 
-def _compute_placement_cost(team: TeamSlot, player: PlayerProfile, all_teams: list[TeamSlot]) -> float:
+def _compute_placement_cost(
+    team: TeamSlot, player: PlayerProfile, all_teams: list[TeamSlot]
+) -> float:
     """Compute the cost of placing a player on a specific team."""
     num_teams = len(all_teams)
 
     # Quality imbalance: how far this team's quality would be from average
     total_quality_all = sum(t.total_quality for t in all_teams) + player.quality
-    total_players_all = sum(len(t.players) for t in all_teams) + 1
     avg_quality = total_quality_all / num_teams
     team_quality_after = team.total_quality + player.quality
     quality_cost = abs(team_quality_after - avg_quality)
@@ -68,7 +69,9 @@ def _compute_placement_cost(team: TeamSlot, player: PlayerProfile, all_teams: li
     )
 
 
-def _pre_assign_tall_centers(players: list[PlayerProfile], teams: list[TeamSlot]) -> list[PlayerProfile]:
+def _pre_assign_tall_centers(
+    players: list[PlayerProfile], teams: list[TeamSlot]
+) -> list[PlayerProfile]:
     """
     Pre-assign pairs of tall centers with similar quality to different teams.
     Returns the remaining unassigned players.
@@ -97,6 +100,7 @@ def _pre_assign_tall_centers(players: list[PlayerProfile], teams: list[TeamSlot]
 
 def _serpentine_draft(players: list[PlayerProfile], teams: list[TeamSlot]):
     """Perform serpentine draft with cost-based team assignment."""
+
     # Sort by quality descending, with scarcity bonus for centers and tall players
     def sort_key(p):
         scarcity = 0

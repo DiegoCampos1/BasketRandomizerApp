@@ -113,3 +113,4 @@ Sport Creative palette (indigo + orange):
 - Do not mix sx prop and Tailwind on the same element
 - Do not save temporary screenshots or logs in the project root. Playwright MCP files go to `.playwright-mcp/` (already in .gitignore)
 - **Testing is mandatory**: Always create backend tests for new features/endpoints. Before finishing, run ALL existing tests (`docker compose exec api python manage.py test`) to ensure nothing is broken. Never ship code without verifying tests pass.
+- **Code quality**: Backend uses flake8 + isort + black (config in `pyproject.toml` and `.flake8`). Run `docker compose exec api black .` + `isort .` + `flake8 .` to format and lint. All 3 must pass clean.

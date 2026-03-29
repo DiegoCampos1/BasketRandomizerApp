@@ -64,9 +64,7 @@ class DivisionServiceApprovalTest(TestCase):
 
         division = create_division(self.user, player_ids, "2_teams", "2026-03-28")
 
-        total_players = sum(
-            team.team_players.count() for team in division.teams.all()
-        )
+        total_players = sum(team.team_players.count() for team in division.teams.all())
         self.assertEqual(total_players, 4)
 
     def test_division_rejects_inactive_players(self):
@@ -131,7 +129,5 @@ class DivisionServiceFourTeamsApprovalTest(TestCase):
         division = create_division(self.user, player_ids, "4_teams", "2026-03-28")
 
         self.assertEqual(division.teams.count(), 4)
-        total_players = sum(
-            team.team_players.count() for team in division.teams.all()
-        )
+        total_players = sum(team.team_players.count() for team in division.teams.all())
         self.assertEqual(total_players, 8)
