@@ -48,7 +48,7 @@ export default function DivisionDetailPage() {
           </Typography>
           <Typography variant="body2" color="text.secondary">
             {division.mode === "2_teams" ? "2 Times" : "4 Times"} — Criado por{" "}
-            {division.created_by_username}
+            {division.created_by_name}
           </Typography>
         </Box>
       </Box>

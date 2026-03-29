@@ -8,14 +8,18 @@ Application for balanced team division in pickup basketball games. Solves the pa
 - **Backend**: Django REST Framework (Python)
 - **Frontend**: Next.js 14+ (App Router) + MUI + Tailwind CSS
 - **Database**: PostgreSQL 16
-- **Auth**: JWT via djangorestframework-simplejwt
+- **Auth**: JWT via djangorestframework-simplejwt (login by email, USERNAME_FIELD = 'email')
 - **Infra**: Docker Compose (PostgreSQL + Django + Next.js)
 
 ## Visual Theme
-NBA colors:
-- Red: `#C8102E`
-- Blue: `#1D428A`
-- White: `#FFFFFF`
+Sport Creative palette (indigo + orange):
+- Primary (Indigo): `#4F46E5` (light: `#6366F1`, dark: `#3730A3`)
+- Secondary (Orange): `#F97316` (light: `#FB923C`, dark: `#EA580C`)
+- Background: `#F8FAFC`
+- Text: `#0F172A` (primary), `#475569` (secondary)
+- Border: `#E2E8F0`
+- Success: `#10B981`, Error: `#EF4444`, Warning: `#F59E0B`
+- Typography: Barlow Condensed (headings) + Barlow (body)
 - MUI with `enableCssLayer: true` + Tailwind with `preflight: false`
 
 ## Business Rules
@@ -45,7 +49,7 @@ NBA colors:
 ## Backend Structure
 - `config/` — settings, urls, wsgi
 - `core/` — shared mixins (OrganizationQuerySetMixin)
-- `apps/accounts/` — User (AbstractUser) + Organization
+- `apps/accounts/` — User (AbstractUser, USERNAME_FIELD='email') + Organization
 - `apps/players/` — Player CRUD
 - `apps/divisions/` — Division, Team, TeamPlayer + algorithm.py + services.py
 - All model IDs are UUIDs
@@ -62,8 +66,8 @@ NBA colors:
 - State: zustand (no Redux)
 
 ## API Endpoints (prefix /api/v1/)
-- `auth/register/` POST — create user + org
-- `auth/login/` POST — JWT login
+- `auth/register/` POST — create user + org (fields: name, email, password, password_confirm, organization_name)
+- `auth/login/` POST — JWT login (fields: email, password)
 - `auth/refresh/` POST — refresh JWT
 - `players/` GET, POST
 - `players/<id>/` GET, PUT, DELETE
@@ -78,7 +82,7 @@ NBA colors:
 - Web: Next.js on port 3000
 
 ## Test User (for Claude)
-- **Username**: claude
+- **Name**: Claude
 - **Email**: claude@test.com
 - **Password**: Claude@123
 - **Organization**: Boomerangs Basketball

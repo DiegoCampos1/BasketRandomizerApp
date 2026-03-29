@@ -10,7 +10,7 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Alert from "@mui/material/Alert";
-import SportsBasketball from "@mui/icons-material/SportsBasketball";
+import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import { register } from "@/lib/api/auth";
 import { useAuthStore } from "@/stores/authStore";
 
@@ -18,7 +18,7 @@ export default function RegisterPage() {
   const router = useRouter();
   const authLogin = useAuthStore((s) => s.login);
   const [form, setForm] = useState({
-    username: "",
+    name: "",
     email: "",
     password: "",
     password_confirm: "",
@@ -71,8 +71,8 @@ export default function RegisterPage() {
     <Card className="w-full max-w-md">
       <CardContent className="p-8">
         <Box className="mb-6 flex flex-col items-center">
-          <SportsBasketball
-            sx={{ fontSize: 48, color: "primary.main", mb: 1 }}
+          <EmojiEventsIcon
+            sx={{ fontSize: 48, color: "secondary.main", mb: 1 }}
           />
           <Typography variant="h5" className="font-bold">
             Criar Conta
@@ -90,9 +90,9 @@ export default function RegisterPage() {
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <TextField
-            label="Usuário"
-            value={form.username}
-            onChange={handleChange("username")}
+            label="Nome"
+            value={form.name}
+            onChange={handleChange("name")}
             required
             fullWidth
             autoFocus
@@ -127,7 +127,7 @@ export default function RegisterPage() {
             onChange={handleChange("organization_name")}
             required
             fullWidth
-            helperText="Ex: Boomerangs Basketball"
+            helperText="Ex: Boomerangs Basketball, Gol Contra FC"
           />
           <Button
             type="submit"
@@ -144,7 +144,7 @@ export default function RegisterPage() {
             Já tem conta?{" "}
             <Link
               href="/login"
-              className="font-semibold text-[#1D428A] hover:underline"
+              className="font-semibold text-[#4F46E5] hover:underline"
             >
               Faça login
             </Link>

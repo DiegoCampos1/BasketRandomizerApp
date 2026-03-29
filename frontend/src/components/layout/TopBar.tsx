@@ -31,7 +31,7 @@ export default function TopBar({ onMenuClick, showMenuButton }: TopBarProps) {
     (pathname.startsWith("/history/") ? "Detalhes da Divisão" : "");
 
   const initials = user
-    ? (user.first_name?.[0] || user.username[0]).toUpperCase()
+    ? (user.first_name?.[0] || user.email[0]).toUpperCase()
     : "";
 
   return (
@@ -70,13 +70,13 @@ export default function TopBar({ onMenuClick, showMenuButton }: TopBarProps) {
             color="text.secondary"
             className="hidden sm:block"
           >
-            {user?.first_name || user?.username}
+            {user?.first_name || user?.email}
           </Typography>
           <Avatar
             sx={{
               width: 34,
               height: 34,
-              bgcolor: "secondary.main",
+              bgcolor: "primary.main",
               fontSize: 14,
               fontWeight: 600,
             }}

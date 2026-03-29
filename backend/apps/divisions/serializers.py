@@ -30,13 +30,16 @@ class TeamSerializer(serializers.ModelSerializer):
 
 
 class DivisionListSerializer(serializers.ModelSerializer):
-    created_by_username = serializers.CharField(source="created_by.username", read_only=True)
+    created_by_name = serializers.SerializerMethodField()
     team_count = serializers.SerializerMethodField()
     player_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Division
-        fields = ["id", "date", "mode", "created_by_username", "team_count", "player_count", "created_at"]
+        fields = ["id", "date", "mode", "created_by_name", "team_count", "player_count", "created_at"]
+
+    def get_created_by_name(self, obj):
+        return obj.created_by.first_name or obj.created_by.email
 
     def get_team_count(self, obj):
         return obj.teams.count()
@@ -47,11 +50,14 @@ class DivisionListSerializer(serializers.ModelSerializer):
 
 class DivisionDetailSerializer(serializers.ModelSerializer):
     teams = TeamSerializer(many=True, read_only=True)
-    created_by_username = serializers.CharField(source="created_by.username", read_only=True)
+    created_by_name = serializers.SerializerMethodField()
 
     class Meta:
         model = Division
-        fields = ["id", "date", "mode", "created_by_username", "teams", "created_at"]
+        fields = ["id", "date", "mode", "created_by_name", "teams", "created_at"]
+
+    def get_created_by_name(self, obj):
+        return obj.created_by.first_name or obj.created_by.email
 
 
 class DivisionCreateSerializer(serializers.Serializer):

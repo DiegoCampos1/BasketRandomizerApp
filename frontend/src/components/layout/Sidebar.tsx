@@ -13,9 +13,10 @@ import Divider from "@mui/material/Divider";
 import Typography from "@mui/material/Typography";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import PeopleIcon from "@mui/icons-material/People";
-import SportsBasketballIcon from "@mui/icons-material/SportsBasketball";
+import ShuffleIcon from "@mui/icons-material/Shuffle";
 import HistoryIcon from "@mui/icons-material/History";
 import LogoutIcon from "@mui/icons-material/Logout";
+import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import { useAuthStore } from "@/stores/authStore";
 
 const DRAWER_WIDTH = 260;
@@ -23,7 +24,7 @@ const DRAWER_WIDTH = 260;
 const navItems = [
   { label: "Dashboard", href: "/dashboard", icon: <DashboardIcon /> },
   { label: "Jogadores", href: "/players", icon: <PeopleIcon /> },
-  { label: "Dividir Times", href: "/division", icon: <SportsBasketballIcon /> },
+  { label: "Dividir Times", href: "/division", icon: <ShuffleIcon /> },
   { label: "Histórico", href: "/history", icon: <HistoryIcon /> },
 ];
 
@@ -41,7 +42,7 @@ export default function Sidebar({ open, onClose, variant }: SidebarProps) {
   const drawerContent = (
     <Box className="flex h-full flex-col px-1">
       <Box className="flex items-center gap-2 px-4 py-3 h-20">
-        <SportsBasketballIcon sx={{ color: "primary.main", fontSize: 32 }} />
+        <EmojiEventsIcon sx={{ color: "secondary.main", fontSize: 32 }} />
         <Box>
           <Typography variant="subtitle1" color="text.secondary">
             {user?.organization?.name || ""}
@@ -63,11 +64,15 @@ export default function Sidebar({ open, onClose, variant }: SidebarProps) {
                 selected={isActive}
                 sx={{
                   borderRadius: 1.5,
+                  transition: "all 200ms ease-out",
                   "&.Mui-selected": {
                     backgroundColor: "primary.main",
                     color: "white",
                     "&:hover": { backgroundColor: "primary.dark" },
                     "& .MuiListItemIcon-root": { color: "white" },
+                  },
+                  "&:hover:not(.Mui-selected)": {
+                    backgroundColor: "rgba(79, 70, 229, 0.06)",
                   },
                 }}
               >
@@ -83,7 +88,18 @@ export default function Sidebar({ open, onClose, variant }: SidebarProps) {
 
       <List className="px-3 pb-2">
         <ListItem disablePadding>
-          <ListItemButton onClick={logout} sx={{ borderRadius: 1.5 }}>
+          <ListItemButton
+            onClick={logout}
+            sx={{
+              borderRadius: 1.5,
+              transition: "all 200ms ease-out",
+              "&:hover": {
+                backgroundColor: "rgba(239, 68, 68, 0.06)",
+                color: "error.main",
+                "& .MuiListItemIcon-root": { color: "error.main" },
+              },
+            }}
+          >
             <ListItemIcon sx={{ minWidth: 40 }}>
               <LogoutIcon />
             </ListItemIcon>

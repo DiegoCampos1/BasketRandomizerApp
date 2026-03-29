@@ -23,22 +23,17 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ["id", "username", "email", "first_name", "last_name", "organization"]
+        fields = ["id", "email", "first_name", "last_name", "organization"]
         read_only_fields = ["id"]
 
 
 class RegisterSerializer(serializers.Serializer):
-    username = serializers.CharField(max_length=150)
+    name = serializers.CharField(max_length=150)
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True, min_length=8)
     password_confirm = serializers.CharField(write_only=True)
     organization_name = serializers.CharField(max_length=255, required=False)
     organization_id = serializers.UUIDField(required=False)
-
-    def validate_username(self, value):
-        if User.objects.filter(username=value).exists():
-            raise serializers.ValidationError("Username já existe.")
-        return value
 
     def validate_email(self, value):
         if User.objects.filter(email=value).exists():
@@ -75,16 +70,27 @@ class RegisterSerializer(serializers.Serializer):
         validated_data.pop("password_confirm")
         org_name = validated_data.pop("organization_name", None)
         org_id = validated_data.pop("organization_id", None)
+        name = validated_data.pop("name")
 
         if org_name:
             organization = Organization.objects.create(name=org_name)
         else:
             organization = Organization.objects.get(id=org_id)
 
+        # Auto-generate username from email prefix to satisfy AbstractUser
+        email = validated_data["email"]
+        base_username = email.split("@")[0]
+        username = base_username
+        counter = 1
+        while User.objects.filter(username=username).exists():
+            username = f"{base_username}{counter}"
+            counter += 1
+
         user = User.objects.create_user(
-            username=validated_data["username"],
-            email=validated_data["email"],
+            username=username,
+            email=email,
             password=validated_data["password"],
+            first_name=name,
             organization=organization,
         )
         return user

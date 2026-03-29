@@ -139,8 +139,8 @@ export default function DivisionPage() {
         )}
 
         <Box className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          {division.teams.map((team) => (
-            <TeamCard key={team.id} team={team} />
+          {division.teams.map((team, index) => (
+            <TeamCard key={team.id} team={team} index={index} />
           ))}
         </Box>
       </Box>
@@ -221,6 +221,7 @@ export default function DivisionPage() {
                 borderColor: selectedIds.has(player.id)
                   ? "primary.main"
                   : "divider",
+                transition: "border-color 200ms ease-out",
               }}
               onClick={() => togglePlayer(player.id)}
             >
@@ -256,6 +257,7 @@ export default function DivisionPage() {
       {/* Divide button */}
       <Button
         variant="contained"
+        color="secondary"
         size="large"
         startIcon={<ShuffleIcon />}
         onClick={handleDivide}
@@ -269,14 +271,16 @@ export default function DivisionPage() {
   );
 }
 
-function TeamCard({ team }: { team: Team }) {
-  const isVermelho = team.name.toLowerCase().includes("vermelho");
+const TEAM_COLORS = ["#4F46E5", "#F97316", "#10B981", "#EF4444"];
+
+function TeamCard({ team, index }: { team: Team; index: number }) {
+  const borderColor = TEAM_COLORS[index % TEAM_COLORS.length];
 
   return (
     <Card
       sx={{
         borderTop: 4,
-        borderColor: isVermelho ? "primary.main" : "secondary.main",
+        borderColor,
       }}
     >
       <CardContent>
@@ -286,8 +290,12 @@ function TeamCard({ team }: { team: Team }) {
           </Typography>
           <Chip
             label={`Qualidade: ${team.total_quality}`}
-            color={isVermelho ? "error" : "primary"}
             size="small"
+            sx={{
+              backgroundColor: `${borderColor}14`,
+              color: borderColor,
+              fontWeight: 600,
+            }}
           />
         </Box>
 
@@ -295,7 +303,8 @@ function TeamCard({ team }: { team: Team }) {
           {team.team_players.map((tp) => (
             <Box
               key={tp.id}
-              className="flex items-center justify-between rounded-lg bg-gray-50 p-2"
+              className="flex items-center justify-between rounded-lg p-2"
+              sx={{ backgroundColor: "rgba(248, 250, 252, 1)" }}
             >
               <Box className="flex items-center gap-2">
                 <Typography variant="body2" className="font-medium">

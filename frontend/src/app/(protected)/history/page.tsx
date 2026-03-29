@@ -38,7 +38,7 @@ export default function HistoryPage() {
                       {new Date(div.date).toLocaleDateString("pt-BR")}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                      Criado por {div.created_by_username}
+                      Criado por {div.created_by_name}
                     </Typography>
                   </Box>
                   <Box className="flex items-center gap-2">

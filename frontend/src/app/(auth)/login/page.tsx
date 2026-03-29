@@ -10,14 +10,14 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Alert from "@mui/material/Alert";
-import SportsBasketball from "@mui/icons-material/SportsBasketball";
+import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import { login } from "@/lib/api/auth";
 import { useAuthStore } from "@/stores/authStore";
 
 export default function LoginPage() {
   const router = useRouter();
   const authLogin = useAuthStore((s) => s.login);
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -28,11 +28,11 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const tokens = await login({ username, password });
+      const tokens = await login({ email, password });
       await authLogin(tokens.access, tokens.refresh);
       router.push("/dashboard");
     } catch {
-      setError("Usuário ou senha inválidos.");
+      setError("Email ou senha inválidos.");
     } finally {
       setLoading(false);
     }
@@ -42,8 +42,8 @@ export default function LoginPage() {
     <Card className="w-full max-w-md">
       <CardContent className="p-4 sm:p-6">
         <Box className="mb-6 flex flex-col items-center">
-          <SportsBasketball
-            sx={{ fontSize: 48, color: "primary.main", mb: 1 }}
+          <EmojiEventsIcon
+            sx={{ fontSize: 48, color: "secondary.main", mb: 1 }}
           />
           <Typography variant="h5" className="font-bold">
             Sorteador de Times
@@ -61,9 +61,10 @@ export default function LoginPage() {
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <TextField
-            label="Usuário"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            label="Email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             required
             fullWidth
             autoFocus
@@ -91,7 +92,7 @@ export default function LoginPage() {
             Não tem conta?{" "}
             <Link
               href="/register"
-              className="font-semibold text-[#1D428A] hover:underline"
+              className="font-semibold text-[#4F46E5] hover:underline"
             >
               Cadastre-se
             </Link>

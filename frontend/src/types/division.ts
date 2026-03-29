@@ -21,7 +21,7 @@ export interface Division {
   id: string;
   date: string;
   mode: DivisionMode;
-  created_by_username: string;
+  created_by_name: string;
   teams: Team[];
   created_at: string;
 }
@@ -30,7 +30,7 @@ export interface DivisionListItem {
   id: string;
   date: string;
   mode: DivisionMode;
-  created_by_username: string;
+  created_by_name: string;
   team_count: number;
   player_count: number;
   created_at: string;

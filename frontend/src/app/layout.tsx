@@ -1,15 +1,27 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Barlow, Barlow_Condensed } from "next/font/google";
 import ThemeRegistry from "@/components/providers/ThemeRegistry";
 import QueryProvider from "@/components/providers/QueryProvider";
 import AuthProvider from "@/components/providers/AuthProvider";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"] });
+const barlow = Barlow({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-barlow",
+  display: "swap",
+});
+
+const barlowCondensed = Barlow_Condensed({
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
+  variable: "--font-barlow-condensed",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "Sorteador de Times",
-  description: "Divisão equilibrada de times para pelada de basquete",
+  description: "Divisão equilibrada de times para peladas esportivas",
 };
 
 export default function RootLayout({
@@ -19,7 +31,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR">
-      <body className={inter.className}>
+      <body
+        className={`${barlow.variable} ${barlowCondensed.variable} ${barlow.className}`}
+      >
         <ThemeRegistry>
           <QueryProvider>
             <AuthProvider>{children}</AuthProvider>

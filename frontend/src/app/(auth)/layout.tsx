@@ -9,7 +9,7 @@ export default function AuthLayout({
     <Box
       className="flex min-h-screen items-center justify-center p-4"
       sx={{
-        background: "linear-gradient(135deg, #1D428A 0%, #C8102E 100%)",
+        background: "linear-gradient(135deg, #4F46E5 0%, #F97316 100%)",
       }}
     >
       {children}

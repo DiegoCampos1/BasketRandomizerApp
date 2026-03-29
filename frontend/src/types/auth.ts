@@ -7,7 +7,6 @@ export interface Organization {
 
 export interface User {
   id: string;
-  username: string;
   email: string;
   first_name: string;
   last_name: string;
@@ -15,12 +14,12 @@ export interface User {
 }
 
 export interface LoginRequest {
-  username: string;
+  email: string;
   password: string;
 }
 
 export interface RegisterRequest {
-  username: string;
+  name: string;
   email: string;
   password: string;
   password_confirm: string;
