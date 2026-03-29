@@ -23,6 +23,8 @@ import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import SportsBasketballIcon from "@mui/icons-material/SportsBasketball";
+import StraightenIcon from "@mui/icons-material/Straighten";
 import { usePlayers } from "@/hooks/players/usePlayers";
 import { usePlayerMutations } from "@/hooks/players/usePlayerMutations";
 import { useAuthStore } from "@/stores/authStore";
@@ -30,16 +32,9 @@ import {
   Player,
   Position,
   POSITION_LABELS,
-  HEIGHT_CATEGORY_LABELS,
 } from "@/types/player";
 
 const POSITIONS: Position[] = ["guard", "forward", "center"];
-
-const HEIGHT_COLORS: Record<string, "default" | "primary" | "secondary"> = {
-  small: "default",
-  medium: "primary",
-  tall: "secondary",
-};
 
 export default function PlayersPage() {
   const { data: players = [] } = usePlayers();
@@ -271,18 +266,14 @@ export default function PlayersPage() {
 
                   <Box className="flex flex-wrap gap-1.5">
                     <Chip
+                      icon={<SportsBasketballIcon />}
                       label={POSITION_LABELS[player.position]}
                       size="small"
                       variant="outlined"
                       sx={{ fontWeight: 500 }}
                     />
                     <Chip
-                      label={HEIGHT_CATEGORY_LABELS[player.height_category]}
-                      size="small"
-                      color={HEIGHT_COLORS[player.height_category]}
-                      sx={{ fontWeight: 500 }}
-                    />
-                    <Chip
+                      icon={<StraightenIcon />}
                       label={`${player.height_cm} cm`}
                       size="small"
                       variant="outlined"
@@ -371,18 +362,14 @@ export default function PlayersPage() {
 
                     <Box className="mb-3 flex flex-wrap gap-1.5">
                       <Chip
+                        icon={<SportsBasketballIcon />}
                         label={POSITION_LABELS[player.position]}
                         size="small"
                         variant="outlined"
                         sx={{ fontWeight: 500 }}
                       />
                       <Chip
-                        label={HEIGHT_CATEGORY_LABELS[player.height_category]}
-                        size="small"
-                        color={HEIGHT_COLORS[player.height_category]}
-                        sx={{ fontWeight: 500 }}
-                      />
-                      <Chip
+                        icon={<StraightenIcon />}
                         label={`${player.height_cm} cm`}
                         size="small"
                         variant="outlined"
