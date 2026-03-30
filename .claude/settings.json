@@ -1,4 +1,19 @@
 {
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/lint-python.sh",
+            "timeout": 30,
+            "statusMessage": "Running black + isort + flake8..."
+          }
+        ]
+      }
+    ]
+  },
   "permissions": {
     "allow": [
       "WebSearch",
@@ -10,6 +25,16 @@
       "Bash(npm install:*)",
       "Bash(docker compose:*)",
       "Bash(curl:*)",
+      "Bash(mkdir:*)",
+      "Bash(chmod:*)",
+      "Bash(which:*)",
+      "Bash(cat:*)",
+      "Bash(cp:*)",
+      "Bash(mv:*)",
+      "Bash(touch:*)",
+      "Bash(python3:*)",
+      "Bash(git:*)",
+      "Bash(npx:*)",
       "mcp__playwright__browser_navigate",
       "mcp__playwright__browser_snapshot",
       "mcp__playwright__browser_click",
