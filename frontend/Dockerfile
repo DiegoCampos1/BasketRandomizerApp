@@ -8,6 +8,8 @@ RUN npm install
 COPY . .
 
 ARG DEV=false
+ARG NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 RUN if [ "$DEV" = "false" ]; then npm run build; fi
 
 EXPOSE 3000
