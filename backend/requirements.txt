@@ -6,3 +6,4 @@ django-filter>=24.0
 django-cors-headers>=4.3
 dj-database-url>=2.1
 gunicorn>=22.0
+whitenoise>=6.5

@@ -5,9 +5,18 @@ ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
-COPY requirements.txt requirements-dev.txt ./
-RUN pip install --no-cache-dir -r requirements-dev.txt
+COPY requirements.txt requirements-dev.txt* ./
+ARG DEV=false
+RUN if [ "$DEV" = "true" ]; then \
+        pip install --no-cache-dir -r requirements-dev.txt; \
+    else \
+        pip install --no-cache-dir -r requirements.txt; \
+    fi
 
 COPY . .
 
+RUN if [ "$DEV" = "false" ]; then python manage.py collectstatic --noinput; fi
+
 EXPOSE 8000
+
+CMD ["sh", "-c", "gunicorn config.wsgi:application --bind 0.0.0.0:${PORT:-8000}"]
