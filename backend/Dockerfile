@@ -19,4 +19,4 @@ RUN if [ "$DEV" = "false" ]; then python manage.py collectstatic --noinput; fi
 
 EXPOSE 8000
 
-CMD ["sh", "-c", "python manage.py migrate --noinput && uvicorn config.asgi:application --host 0.0.0.0 --port ${PORT:-8000} --workers 1 --lifespan off"]
+CMD ["sh", "-c", "python manage.py migrate --noinput && python manage.py ensure_superuser && uvicorn config.asgi:application --host 0.0.0.0 --port ${PORT:-8000} --workers 1 --lifespan off"]

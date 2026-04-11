@@ -15,6 +15,7 @@ import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import { useTranslations } from "next-intl";
 import { usePlayerLabels } from "@/hooks/usePlayerLabels";
+import LanguageSwitcher from "@/components/layout/LanguageSwitcher";
 import { Position } from "@/types/player";
 import { publicCreatePlayer, getOrganizationInfo } from "@/lib/api/players";
 
@@ -97,7 +98,10 @@ export default function PublicAddPlayerPage() {
 
   if (orgError) {
     return (
-      <Card className="w-full max-w-md">
+      <Card className="relative w-full max-w-md">
+        <Box className="absolute right-2 top-2">
+          <LanguageSwitcher />
+        </Box>
         <CardContent className="flex flex-col items-center gap-4 p-8 text-center">
           <Typography variant="h5" className="font-bold">
             {t("orgNotFound")}
@@ -112,7 +116,10 @@ export default function PublicAddPlayerPage() {
 
   if (success) {
     return (
-      <Card className="w-full max-w-md">
+      <Card className="relative w-full max-w-md">
+        <Box className="absolute right-2 top-2">
+          <LanguageSwitcher />
+        </Box>
         <CardContent className="flex flex-col items-center gap-4 p-8 text-center">
           <CheckCircleOutlineIcon
             sx={{ fontSize: 64, color: "success.main" }}
@@ -141,7 +148,10 @@ export default function PublicAddPlayerPage() {
   }
 
   return (
-    <Card className="w-full max-w-md">
+    <Card className="relative w-full max-w-md">
+      <Box className="absolute right-2 top-2">
+        <LanguageSwitcher />
+      </Box>
       <CardContent className="p-4 sm:p-6">
         <Box className="mb-6 flex flex-col items-center">
           <EmojiEventsIcon

@@ -14,6 +14,7 @@ import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import { useTranslations } from "next-intl";
 import { login } from "@/lib/api/auth";
 import { useAuthStore } from "@/stores/authStore";
+import LanguageSwitcher from "@/components/layout/LanguageSwitcher";
 
 export default function LoginPage() {
   const t = useTranslations("auth");
@@ -41,7 +42,10 @@ export default function LoginPage() {
   };
 
   return (
-    <Card className="w-full max-w-md">
+    <Card className="relative w-full max-w-md">
+      <Box className="absolute right-2 top-2">
+        <LanguageSwitcher />
+      </Box>
       <CardContent className="p-4 sm:p-6">
         <Box className="mb-6 flex flex-col items-center">
           <EmojiEventsIcon
