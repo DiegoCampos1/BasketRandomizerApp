@@ -103,3 +103,8 @@ class SwapPlayersSerializer(serializers.Serializer):
         if data["player_a_id"] == data["player_b_id"]:
             raise serializers.ValidationError("Selecione dois jogadores diferentes.")
         return data
+
+
+class MovePlayerSerializer(serializers.Serializer):
+    team_player_id = serializers.UUIDField()
+    target_team_id = serializers.UUIDField()

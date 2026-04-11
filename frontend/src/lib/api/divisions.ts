@@ -2,6 +2,7 @@ import {
   CreateDivisionInput,
   Division,
   DivisionListItem,
+  MovePlayerInput,
   SwapPlayersInput,
 } from "@/types/division";
 import apiClient from "./client";
@@ -23,6 +24,17 @@ export async function createDivision(data: CreateDivisionInput): Promise<Divisio
 
 export async function swapPlayers(divisionId: string, data: SwapPlayersInput): Promise<Division> {
   const response = await apiClient.post(`/divisions/${divisionId}/swap/`, data);
+  return response.data;
+}
+
+export async function movePlayer(
+  divisionId: string,
+  data: MovePlayerInput
+): Promise<Division> {
+  const response = await apiClient.post(
+    `/divisions/${divisionId}/move/`,
+    data
+  );
   return response.data;
 }
 

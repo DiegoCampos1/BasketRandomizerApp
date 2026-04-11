@@ -14,8 +14,7 @@ class Command(BaseCommand):
         if not email or not password:
             self.stdout.write(
                 self.style.NOTICE(
-                    "DJANGO_SUPERUSER_EMAIL or DJANGO_SUPERUSER_PASSWORD "
-                    "not set. Skipping."
+                    "DJANGO_SUPERUSER_EMAIL or DJANGO_SUPERUSER_PASSWORD " "not set. Skipping."
                 )
             )
             return
@@ -34,25 +33,13 @@ class Command(BaseCommand):
             if changed:
                 user.set_password(password)
                 user.save()
-                self.stdout.write(
-                    self.style.SUCCESS(
-                        f"User {email} promoted to superuser."
-                    )
-                )
+                self.stdout.write(self.style.SUCCESS(f"User {email} promoted to superuser."))
             else:
-                self.stdout.write(
-                    self.style.SUCCESS(
-                        f"Superuser {email} already exists."
-                    )
-                )
+                self.stdout.write(self.style.SUCCESS(f"Superuser {email} already exists."))
         else:
             User.objects.create_superuser(
                 username=email,
                 email=email,
                 password=password,
             )
-            self.stdout.write(
-                self.style.SUCCESS(
-                    f"Superuser {email} created successfully."
-                )
-            )
+            self.stdout.write(self.style.SUCCESS(f"Superuser {email} created successfully."))

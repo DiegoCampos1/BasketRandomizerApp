@@ -27,6 +27,18 @@
     "maxSelected": "Maximum of {max} players. Only the first {max} were selected.",
     "minPlayers": "Select at least {min} players for {teams} teams.",
     "divisionError": "Error dividing teams.",
-    "swapError": "Error swapping players."
+    "swapError": "Error swapping players.",
+    "moveError": "Error moving player. Please try again."
+  },
+  "dnd": {
+    "hint": "Drag players between teams to adjust"
+  },
+  "share": {
+    "screenshot": "Copy image",
+    "copyText": "Copy text",
+    "imageCopied": "Image copied!",
+    "textCopied": "Text copied!",
+    "textHeader": "Teams - {date}",
+    "playerCount": "{count} players"
   }
 }

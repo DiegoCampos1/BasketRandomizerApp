@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
@@ -13,21 +13,75 @@ import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import Alert from "@mui/material/Alert";
 import AlertTitle from "@mui/material/AlertTitle";
 import Rating from "@mui/material/Rating";
+import IconButton from "@mui/material/IconButton";
+import Tooltip from "@mui/material/Tooltip";
 import ShuffleIcon from "@mui/icons-material/Shuffle";
-import { useTranslations } from "next-intl";
+import CameraAltIcon from "@mui/icons-material/CameraAlt";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import {
+  DndContext,
+  DragOverlay,
+  closestCenter,
+  PointerSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
+  type DragStartEvent,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import html2canvas from "html2canvas";
+import { useTranslations, useLocale } from "next-intl";
 import { usePlayers } from "@/hooks/players/usePlayers";
 import { useDivisionMutations } from "@/hooks/divisions/useDivisionMutations";
 import { usePlayerLabels } from "@/hooks/usePlayerLabels";
-import { Division, DivisionMode, Team } from "@/types/division";
+import { Division, DivisionMode, TeamPlayer } from "@/types/division";
+import DroppableTeamCard from "@/components/division/DroppableTeamCard";
+import PlayerRowOverlay from "@/components/division/PlayerRowOverlay";
 
 const MAX_PLAYERS = 20;
 
+function applyOptimisticMove(
+  division: Division,
+  teamPlayerId: string,
+  targetTeamId: string
+): Division {
+  const teams = division.teams.map((team) => ({
+    ...team,
+    team_players: [...team.team_players],
+  }));
+
+  let movedPlayer: TeamPlayer | undefined;
+
+  for (const team of teams) {
+    const idx = team.team_players.findIndex((tp) => tp.id === teamPlayerId);
+    if (idx !== -1) {
+      movedPlayer = team.team_players.splice(idx, 1)[0];
+      team.total_quality -= movedPlayer.player.quality;
+      team.player_count -= 1;
+      break;
+    }
+  }
+
+  if (movedPlayer) {
+    const target = teams.find((t) => t.id === targetTeamId);
+    if (target) {
+      target.team_players.push(movedPlayer);
+      target.total_quality += movedPlayer.player.quality;
+      target.player_count += 1;
+    }
+  }
+
+  return { ...division, teams };
+}
+
 export default function DivisionPage() {
   const t = useTranslations("division");
+  const locale = useLocale();
   const { positionLabels, heightCategoryLabels } = usePlayerLabels();
+  const teamsGridRef = useRef<HTMLDivElement>(null);
   const { data: allPlayers = [] } = usePlayers();
   const players = allPlayers.filter((p) => p.active && p.is_approved);
-  const { createDivision, swapPlayers } = useDivisionMutations();
+  const { createDivision, movePlayer } = useDivisionMutations();
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [mode, setMode] = useState<DivisionMode>("2_teams");
   const [division, setDivision] = useState<Division | null>(null);
@@ -35,6 +89,17 @@ export default function DivisionPage() {
   const [loading, setLoading] = useState(false);
   const [saved, setSaved] = useState(false);
   const [showTips, setShowTips] = useState(true);
+  const [activeDragPlayer, setActiveDragPlayer] = useState<TeamPlayer | null>(
+    null
+  );
+  const [copiedType, setCopiedType] = useState<"image" | "text" | null>(null);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(TouchSensor, {
+      activationConstraint: { delay: 200, tolerance: 5 },
+    })
+  );
 
   const togglePlayer = (id: string) => {
     if (!selectedIds.has(id) && selectedIds.size >= MAX_PLAYERS) {
@@ -74,7 +139,7 @@ export default function DivisionPage() {
         t("errors.minPlayers", {
           min: minPlayers,
           teams: mode === "2_teams" ? "2" : "4",
-        }),
+        })
       );
       return;
     }
@@ -101,20 +166,91 @@ export default function DivisionPage() {
     }
   };
 
-  const handleSwap = async (playerAId: string, playerBId: string) => {
+  const handleDragStart = (event: DragStartEvent) => {
     if (!division) return;
-    try {
-      const result = await swapPlayers.mutateAsync({
+    const teamPlayerId = event.active.id as string;
+    for (const team of division.teams) {
+      const tp = team.team_players.find((p) => p.id === teamPlayerId);
+      if (tp) {
+        setActiveDragPlayer(tp);
+        break;
+      }
+    }
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    setActiveDragPlayer(null);
+    const { active, over } = event;
+    if (!over || !division) return;
+
+    const teamPlayerId = active.id as string;
+    const sourceTeamId = active.data.current?.sourceTeamId as string;
+    const targetTeamId = over.id as string;
+
+    if (sourceTeamId === targetTeamId) return;
+
+    const previousDivision = division;
+    setDivision(applyOptimisticMove(division, teamPlayerId, targetTeamId));
+    setError("");
+
+    movePlayer
+      .mutateAsync({
         divisionId: division.id,
         data: {
-          player_a_id: playerAId,
-          player_b_id: playerBId,
+          team_player_id: teamPlayerId,
+          target_team_id: targetTeamId,
         },
+      })
+      .then((serverDivision) => setDivision(serverDivision))
+      .catch(() => {
+        setDivision(previousDivision);
+        setError(t("errors.moveError"));
       });
-      setDivision(result);
+  };
+
+  const handleScreenshot = async () => {
+    if (!teamsGridRef.current) return;
+    try {
+      const canvas = await html2canvas(teamsGridRef.current, {
+        backgroundColor: "#F8FAFC",
+        scale: 2,
+      });
+      canvas.toBlob(async (blob) => {
+        if (!blob) return;
+        await navigator.clipboard.write([
+          new ClipboardItem({ "image/png": blob }),
+        ]);
+        setCopiedType("image");
+        setTimeout(() => setCopiedType(null), 2000);
+      });
     } catch {
-      setError(t("errors.swapError"));
+      // Clipboard API may not be available
     }
+  };
+
+  const handleCopyText = () => {
+    if (!division) return;
+    const dateStr = new Date(division.date).toLocaleDateString(locale);
+    const header = `🏀 ${t("share.textHeader", { date: dateStr })}`;
+
+    const teamsText = division.teams
+      .map((team) => {
+        const playerLines = team.team_players
+          .map(
+            (tp) =>
+              `- ${tp.player.name} | ${positionLabels[tp.player.position]}`
+          )
+          .join("\n");
+        const count = t("share.playerCount", {
+          count: team.team_players.length,
+        });
+        return `\n⬛ ${team.name} (${count})\n${playerLines}`;
+      })
+      .join("\n");
+
+    navigator.clipboard.writeText(`${header}\n${teamsText}`);
+    setCopiedType("text");
+    setTimeout(() => setCopiedType(null), 2000);
   };
 
   const resetDivision = () => {
@@ -126,33 +262,110 @@ export default function DivisionPage() {
   if (division) {
     return (
       <Box>
-        <Box className="mb-6 flex items-center justify-between">
+        <Box className="mb-2 flex items-center justify-between">
           <Typography variant="h4">{t("resultTitle")}</Typography>
-          <Box className="flex gap-2">
+          <Box className="flex items-center gap-1">
+            <Tooltip
+              title={
+                copiedType === "image"
+                  ? t("share.imageCopied")
+                  : t("share.screenshot")
+              }
+            >
+              <IconButton
+                onClick={handleScreenshot}
+                size="small"
+                color={copiedType === "image" ? "success" : "default"}
+              >
+                <CameraAltIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+            <Tooltip
+              title={
+                copiedType === "text"
+                  ? t("share.textCopied")
+                  : t("share.copyText")
+              }
+            >
+              <IconButton
+                onClick={handleCopyText}
+                size="small"
+                color={copiedType === "text" ? "success" : "default"}
+              >
+                <ContentCopyIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
             <Button variant="outlined" onClick={resetDivision}>
               {t("newDivision")}
             </Button>
           </Box>
         </Box>
 
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          className="mb-4"
+        >
+          {t("dnd.hint")}
+        </Typography>
+
         {saved && (
-          <Alert severity="success" className="mb-4">
+          <Alert
+            severity="success"
+            className="mb-4"
+            onClose={() => setSaved(false)}
+          >
             {t("savedSuccess")}
           </Alert>
         )}
 
-        <Box className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          {division.teams.map((team, index) => (
-            <TeamCard
-              key={team.id}
-              team={team}
-              index={index}
-              positionLabels={positionLabels}
-              heightCategoryLabels={heightCategoryLabels}
-              t={t}
-            />
-          ))}
-        </Box>
+        {error && (
+          <Alert
+            severity="error"
+            className="mb-4"
+            onClose={() => setError("")}
+          >
+            {error}
+          </Alert>
+        )}
+
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+        >
+          <Box
+            ref={teamsGridRef}
+            className="grid grid-cols-1 gap-4 md:grid-cols-2"
+          >
+            {division.teams.map((team, index) => (
+              <DroppableTeamCard
+                key={team.id}
+                team={team}
+                index={index}
+                positionLabels={positionLabels}
+                heightCategoryLabels={heightCategoryLabels}
+                qualityLabel={t("team.quality", {
+                  value: team.total_quality,
+                })}
+                playerCountLabel={t("team.playerCount", {
+                  count: team.player_count,
+                })}
+              />
+            ))}
+          </Box>
+
+          <DragOverlay>
+            {activeDragPlayer ? (
+              <PlayerRowOverlay
+                teamPlayer={activeDragPlayer}
+                positionLabels={positionLabels}
+                heightCategoryLabels={heightCategoryLabels}
+              />
+            ) : null}
+          </DragOverlay>
+        </DndContext>
       </Box>
     );
   }
@@ -297,90 +510,5 @@ export default function DivisionPage() {
         {loading ? t("dividing") : t("divideButton")}
       </Button>
     </Box>
-  );
-}
-
-const TEAM_COLORS = ["#4F46E5", "#F97316", "#10B981", "#EF4444"];
-
-function TeamCard({
-  team,
-  index,
-  positionLabels,
-  heightCategoryLabels,
-  t,
-}: {
-  team: Team;
-  index: number;
-  positionLabels: Record<string, string>;
-  heightCategoryLabels: Record<string, string>;
-  t: (key: string, values?: Record<string, string | number>) => string;
-}) {
-  const borderColor = TEAM_COLORS[index % TEAM_COLORS.length];
-
-  return (
-    <Card
-      sx={{
-        borderTop: 4,
-        borderColor,
-      }}
-    >
-      <CardContent>
-        <Box className="mb-3 flex items-center justify-between">
-          <Typography variant="h6" className="font-bold">
-            {team.name}
-          </Typography>
-          <Chip
-            label={t("team.quality", { value: team.total_quality })}
-            size="small"
-            sx={{
-              backgroundColor: `${borderColor}14`,
-              color: borderColor,
-              fontWeight: 600,
-            }}
-          />
-        </Box>
-
-        <Box className="flex flex-col gap-2">
-          {team.team_players.map((tp) => (
-            <Box
-              key={tp.id}
-              className="flex items-center justify-between rounded-lg p-2"
-              sx={{ backgroundColor: "rgba(248, 250, 252, 1)" }}
-            >
-              <Box className="flex items-center gap-2">
-                <Typography variant="body2" className="font-medium">
-                  {tp.player.name}
-                </Typography>
-                <Chip
-                  label={positionLabels[tp.player.position]}
-                  size="small"
-                  variant="outlined"
-                />
-              </Box>
-              <Box className="flex items-center gap-1">
-                <Chip
-                  label={heightCategoryLabels[tp.player.height_category]}
-                  size="small"
-                />
-                <Rating
-                  value={tp.player.quality}
-                  readOnly
-                  size="small"
-                  max={5}
-                />
-              </Box>
-            </Box>
-          ))}
-        </Box>
-
-        <Typography
-          variant="caption"
-          color="text.secondary"
-          className="mt-2 block"
-        >
-          {t("team.playerCount", { count: team.player_count })}
-        </Typography>
-      </CardContent>
-    </Card>
   );
 }

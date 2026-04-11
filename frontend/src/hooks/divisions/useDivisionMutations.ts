@@ -2,9 +2,14 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   createDivision,
   swapPlayers,
+  movePlayer,
   deleteDivision,
 } from "@/lib/api/divisions";
-import { CreateDivisionInput, SwapPlayersInput } from "@/types/division";
+import {
+  CreateDivisionInput,
+  SwapPlayersInput,
+  MovePlayerInput,
+} from "@/types/division";
 import { divisionKeys } from "../queryKeys";
 
 export function useDivisionMutations() {
@@ -30,6 +35,20 @@ export function useDivisionMutations() {
       }),
   });
 
+  const move = useMutation({
+    mutationFn: ({
+      divisionId,
+      data,
+    }: {
+      divisionId: string;
+      data: MovePlayerInput;
+    }) => movePlayer(divisionId, data),
+    onSuccess: (_, { divisionId }) =>
+      queryClient.invalidateQueries({
+        queryKey: divisionKeys.detail(divisionId),
+      }),
+  });
+
   const remove = useMutation({
     mutationFn: (id: string) => deleteDivision(id),
     onSuccess: () =>
@@ -39,6 +58,7 @@ export function useDivisionMutations() {
   return {
     createDivision: create,
     swapPlayers: swap,
+    movePlayer: move,
     deleteDivision: remove,
   };
 }

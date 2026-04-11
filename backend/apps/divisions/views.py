@@ -4,14 +4,15 @@ from rest_framework.response import Response
 
 from core.mixins import OrganizationQuerySetMixin
 
-from .models import Division
+from .models import Division, Team, TeamPlayer
 from .serializers import (
     DivisionCreateSerializer,
     DivisionDetailSerializer,
     DivisionListSerializer,
+    MovePlayerSerializer,
     SwapPlayersSerializer,
 )
-from .services import create_division, swap_players
+from .services import create_division, move_player, swap_players
 
 
 class DivisionViewSet(OrganizationQuerySetMixin, viewsets.ModelViewSet):
@@ -55,6 +56,30 @@ class DivisionViewSet(OrganizationQuerySetMixin, viewsets.ModelViewSet):
                 player_b_id=serializer.validated_data["player_b_id"],
             )
         except Exception as e:
+            return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+        division.refresh_from_db()
+        output = DivisionDetailSerializer(division)
+        return Response(output.data)
+
+    @action(detail=True, methods=["post"], url_path="move")
+    def move(self, request, pk=None):
+        division = self.get_object()
+        serializer = MovePlayerSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        try:
+            move_player(
+                division_id=division.id,
+                team_player_id=serializer.validated_data["team_player_id"],
+                target_team_id=serializer.validated_data["target_team_id"],
+            )
+        except (TeamPlayer.DoesNotExist, Team.DoesNotExist):
+            return Response(
+                {"detail": "Jogador ou time não encontrado nesta divisão."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        except ValueError as e:
             return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
         division.refresh_from_db()

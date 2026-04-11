@@ -87,6 +87,7 @@ Sport Creative palette (indigo + orange):
 - `divisions/` GET, POST
 - `divisions/<id>/` GET, DELETE
 - `divisions/<id>/swap/` POST — swap players between teams
+- `divisions/<id>/move/` POST — move player to another team (fields: team_player_id, target_team_id)
 - `notifications/` GET — list notifications
 - `notifications/<id>/` PATCH — mark notification as read
 - `notifications/unread-count/` GET — get unread count

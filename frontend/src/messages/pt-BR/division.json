@@ -27,6 +27,18 @@
     "maxSelected": "Máximo de {max} jogadores. Apenas os {max} primeiros foram selecionados.",
     "minPlayers": "Selecione pelo menos {min} jogadores para {teams} times.",
     "divisionError": "Erro ao dividir times.",
-    "swapError": "Erro ao trocar jogadores."
+    "swapError": "Erro ao trocar jogadores.",
+    "moveError": "Erro ao mover jogador. Tente novamente."
+  },
+  "dnd": {
+    "hint": "Arraste jogadores entre os times para ajustar"
+  },
+  "share": {
+    "screenshot": "Copiar imagem",
+    "copyText": "Copiar texto",
+    "imageCopied": "Imagem copiada!",
+    "textCopied": "Texto copiado!",
+    "textHeader": "Times - {date}",
+    "playerCount": "{count} jogadores"
   }
 }

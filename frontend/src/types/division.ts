@@ -46,3 +46,8 @@ export interface SwapPlayersInput {
   player_a_id: string;
   player_b_id: string;
 }
+
+export interface MovePlayerInput {
+  team_player_id: string;
+  target_team_id: string;
+}

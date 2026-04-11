@@ -1,9 +1,11 @@
 from django.test import TestCase
+from rest_framework.test import APIClient
 
 from apps.accounts.models import Organization, User
 from apps.players.models import Player
 
-from .services import create_division
+from .models import Team, TeamPlayer
+from .services import create_division, move_player
 
 
 class DivisionServiceApprovalTest(TestCase):
@@ -131,3 +133,136 @@ class DivisionServiceFourTeamsApprovalTest(TestCase):
         self.assertEqual(division.teams.count(), 4)
         total_players = sum(team.team_players.count() for team in division.teams.all())
         self.assertEqual(total_players, 8)
+
+
+class MovePlayerTest(TestCase):
+    """Tests for the move_player service."""
+
+    def setUp(self):
+        self.org = Organization.objects.create(name="Test Org Move")
+        self.user = User.objects.create_user(
+            username="move_user",
+            email="move@test.com",
+            password="Test@1234",
+            organization=self.org,
+        )
+        players = [
+            Player.objects.create(
+                name=f"Player {i}",
+                quality=(i % 5) + 1,
+                position="guard",
+                height_cm=180,
+                organization=self.org,
+                is_approved=True,
+            )
+            for i in range(6)
+        ]
+        self.division = create_division(
+            self.user,
+            [p.id for p in players],
+            "2_teams",
+            "2026-04-11",
+        )
+        self.teams = list(self.division.teams.all())
+        self.team_a = self.teams[0]
+        self.team_b = self.teams[1]
+
+    def test_move_player_to_other_team(self):
+        tp = self.team_a.team_players.first()
+        original_a_count = self.team_a.team_players.count()
+        original_b_count = self.team_b.team_players.count()
+
+        move_player(self.division.id, tp.id, self.team_b.id)
+
+        tp.refresh_from_db()
+        self.assertEqual(tp.team_id, self.team_b.id)
+        self.assertEqual(self.team_a.team_players.count(), original_a_count - 1)
+        self.assertEqual(self.team_b.team_players.count(), original_b_count + 1)
+
+    def test_move_to_same_team_raises(self):
+        tp = self.team_a.team_players.first()
+        with self.assertRaises(ValueError) as ctx:
+            move_player(self.division.id, tp.id, self.team_a.id)
+        self.assertIn("já está neste time", str(ctx.exception))
+
+    def test_move_nonexistent_team_player_raises(self):
+        import uuid
+
+        with self.assertRaises(TeamPlayer.DoesNotExist):
+            move_player(self.division.id, uuid.uuid4(), self.team_b.id)
+
+    def test_move_nonexistent_target_team_raises(self):
+        import uuid
+
+        tp = self.team_a.team_players.first()
+        with self.assertRaises(Team.DoesNotExist):
+            move_player(self.division.id, tp.id, uuid.uuid4())
+
+
+class MovePlayerAPITest(TestCase):
+    """Tests for the move endpoint via API."""
+
+    def setUp(self):
+        self.org = Organization.objects.create(name="Test Org API Move")
+        self.user = User.objects.create_user(
+            username="api_move",
+            email="api_move@test.com",
+            password="Test@1234",
+            organization=self.org,
+        )
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user)
+
+        players = [
+            Player.objects.create(
+                name=f"P{i}",
+                quality=3,
+                position="guard",
+                height_cm=180,
+                organization=self.org,
+                is_approved=True,
+            )
+            for i in range(4)
+        ]
+        self.division = create_division(
+            self.user,
+            [p.id for p in players],
+            "2_teams",
+            "2026-04-11",
+        )
+        self.teams = list(self.division.teams.all())
+
+    def test_move_via_api(self):
+        tp = self.teams[0].team_players.first()
+        response = self.client.post(
+            f"/api/v1/divisions/{self.division.id}/move/",
+            {
+                "team_player_id": str(tp.id),
+                "target_team_id": str(self.teams[1].id),
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("teams", response.data)
+
+    def test_move_nonexistent_returns_404(self):
+        import uuid
+
+        response = self.client.post(
+            f"/api/v1/divisions/{self.division.id}/move/",
+            {
+                "team_player_id": str(uuid.uuid4()),
+                "target_team_id": str(self.teams[1].id),
+            },
+        )
+        self.assertEqual(response.status_code, 404)
+
+    def test_move_same_team_returns_400(self):
+        tp = self.teams[0].team_players.first()
+        response = self.client.post(
+            f"/api/v1/divisions/{self.division.id}/move/",
+            {
+                "team_player_id": str(tp.id),
+                "target_team_id": str(self.teams[0].id),
+            },
+        )
+        self.assertEqual(response.status_code, 400)

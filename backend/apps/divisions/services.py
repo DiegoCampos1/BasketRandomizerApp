@@ -1,4 +1,5 @@
 from django.db import transaction
+from django.db.models import Max
 
 from apps.players.models import Player
 
@@ -92,3 +93,31 @@ def swap_players(division_id, player_a_id, player_b_id):
         tp_b.save(update_fields=["team"])
 
     return tp_a.team.division
+
+
+def move_player(division_id, team_player_id, target_team_id):
+    """
+    Move a player from their current team to a target team
+    within the same division. Teams may have unequal sizes.
+    """
+    with transaction.atomic():
+        tp = TeamPlayer.objects.select_related("team__division").get(
+            id=team_player_id,
+            team__division_id=division_id,
+        )
+        target_team = Team.objects.get(
+            id=target_team_id,
+            division_id=division_id,
+        )
+
+        if tp.team_id == target_team.id:
+            raise ValueError("Jogador já está neste time.")
+
+        max_order = (
+            TeamPlayer.objects.filter(team=target_team).aggregate(Max("order"))["order__max"] or 0
+        )
+        tp.team = target_team
+        tp.order = max_order + 1
+        tp.save(update_fields=["team", "order"])
+
+    return tp.team.division
