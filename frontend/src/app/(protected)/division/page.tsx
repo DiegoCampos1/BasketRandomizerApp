@@ -13,17 +13,17 @@ import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import Alert from "@mui/material/Alert";
 import Rating from "@mui/material/Rating";
 import ShuffleIcon from "@mui/icons-material/Shuffle";
+import { useTranslations } from "next-intl";
 import { usePlayers } from "@/hooks/players/usePlayers";
 import { useDivisionMutations } from "@/hooks/divisions/useDivisionMutations";
-import {
-  POSITION_LABELS,
-  HEIGHT_CATEGORY_LABELS,
-} from "@/types/player";
+import { usePlayerLabels } from "@/hooks/usePlayerLabels";
 import { Division, DivisionMode, Team } from "@/types/division";
 
 const MAX_PLAYERS = 20;
 
 export default function DivisionPage() {
+  const t = useTranslations("division");
+  const { positionLabels, heightCategoryLabels } = usePlayerLabels();
   const { data: allPlayers = [] } = usePlayers();
   const players = allPlayers.filter((p) => p.active && p.is_approved);
   const { createDivision, swapPlayers } = useDivisionMutations();
@@ -36,7 +36,7 @@ export default function DivisionPage() {
 
   const togglePlayer = (id: string) => {
     if (!selectedIds.has(id) && selectedIds.size >= MAX_PLAYERS) {
-      setError(`Máximo de ${MAX_PLAYERS} jogadores por divisão.`);
+      setError(t("errors.maxPlayers", { max: MAX_PLAYERS }));
       return;
     }
     setError("");
@@ -52,9 +52,7 @@ export default function DivisionPage() {
     const ids = players.map((p) => p.id).slice(0, MAX_PLAYERS);
     setSelectedIds(new Set(ids));
     if (players.length > MAX_PLAYERS) {
-      setError(
-        `Máximo de ${MAX_PLAYERS} jogadores. Apenas os ${MAX_PLAYERS} primeiros foram selecionados.`,
-      );
+      setError(t("errors.maxSelected", { max: MAX_PLAYERS }));
     } else {
       setError("");
     }
@@ -71,13 +69,16 @@ export default function DivisionPage() {
     const minPlayers = mode === "2_teams" ? 4 : 8;
     if (selectedIds.size < minPlayers) {
       setError(
-        `Selecione pelo menos ${minPlayers} jogadores para ${mode === "2_teams" ? "2" : "4"} times.`,
+        t("errors.minPlayers", {
+          min: minPlayers,
+          teams: mode === "2_teams" ? "2" : "4",
+        }),
       );
       return;
     }
 
     if (selectedIds.size > MAX_PLAYERS) {
-      setError(`Máximo de ${MAX_PLAYERS} jogadores por divisão.`);
+      setError(t("errors.maxPlayers", { max: MAX_PLAYERS }));
       return;
     }
 
@@ -92,7 +93,7 @@ export default function DivisionPage() {
       setDivision(result);
       setSaved(true);
     } catch {
-      setError("Erro ao dividir times.");
+      setError(t("errors.divisionError"));
     } finally {
       setLoading(false);
     }
@@ -110,7 +111,7 @@ export default function DivisionPage() {
       });
       setDivision(result);
     } catch {
-      setError("Erro ao trocar jogadores.");
+      setError(t("errors.swapError"));
     }
   };
 
@@ -124,23 +125,30 @@ export default function DivisionPage() {
     return (
       <Box>
         <Box className="mb-6 flex items-center justify-between">
-          <Typography variant="h4">Times Divididos</Typography>
+          <Typography variant="h4">{t("resultTitle")}</Typography>
           <Box className="flex gap-2">
             <Button variant="outlined" onClick={resetDivision}>
-              Nova Divisão
+              {t("newDivision")}
             </Button>
           </Box>
         </Box>
 
         {saved && (
           <Alert severity="success" className="mb-4">
-            Divisão salva com sucesso!
+            {t("savedSuccess")}
           </Alert>
         )}
 
         <Box className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {division.teams.map((team, index) => (
-            <TeamCard key={team.id} team={team} index={index} />
+            <TeamCard
+              key={team.id}
+              team={team}
+              index={index}
+              positionLabels={positionLabels}
+              heightCategoryLabels={heightCategoryLabels}
+              t={t}
+            />
           ))}
         </Box>
       </Box>
@@ -150,7 +158,7 @@ export default function DivisionPage() {
   return (
     <Box>
       <Typography variant="h4" className="mb-6">
-        Dividir Times
+        {t("title")}
       </Typography>
 
       {error && (
@@ -162,7 +170,7 @@ export default function DivisionPage() {
       {/* Mode selector */}
       <Box className="mb-6">
         <Typography variant="subtitle1" className="mb-2 font-semibold">
-          Modo de divisão
+          {t("modeLabel")}
         </Typography>
         <ToggleButtonGroup
           value={mode}
@@ -170,8 +178,8 @@ export default function DivisionPage() {
           onChange={(_, v) => v && setMode(v)}
           color="primary"
         >
-          <ToggleButton value="2_teams">2 Times</ToggleButton>
-          <ToggleButton value="4_teams">4 Times (2 grupos)</ToggleButton>
+          <ToggleButton value="2_teams">{t("twoTeams")}</ToggleButton>
+          <ToggleButton value="4_teams">{t("fourTeams")}</ToggleButton>
         </ToggleButtonGroup>
       </Box>
 
@@ -179,7 +187,10 @@ export default function DivisionPage() {
       <Box className="mb-6">
         <Box className="mb-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <Typography variant="subtitle1" className="font-semibold">
-            Jogadores presentes ({selectedIds.size}/{MAX_PLAYERS} selecionados)
+            {t("presentPlayers", {
+              selected: selectedIds.size,
+              max: MAX_PLAYERS,
+            })}
           </Typography>
           <Box className="flex gap-2">
             <Button
@@ -193,7 +204,7 @@ export default function DivisionPage() {
                 },
               }}
             >
-              Selecionar todos
+              {t("selectAll")}
             </Button>
             <Button
               size="small"
@@ -206,7 +217,7 @@ export default function DivisionPage() {
                 },
               }}
             >
-              Limpar
+              {t("clear")}
             </Button>
           </Box>
         </Box>
@@ -237,12 +248,12 @@ export default function DivisionPage() {
                   </Typography>
                   <Box className="flex gap-1">
                     <Chip
-                      label={POSITION_LABELS[player.position]}
+                      label={positionLabels[player.position]}
                       size="small"
                       variant="outlined"
                     />
                     <Chip
-                      label={HEIGHT_CATEGORY_LABELS[player.height_category]}
+                      label={heightCategoryLabels[player.height_category]}
                       size="small"
                     />
                   </Box>
@@ -265,7 +276,7 @@ export default function DivisionPage() {
         fullWidth
         sx={{ maxWidth: 400 }}
       >
-        {loading ? "Dividindo..." : "Dividir Times"}
+        {loading ? t("dividing") : t("divideButton")}
       </Button>
     </Box>
   );
@@ -273,7 +284,19 @@ export default function DivisionPage() {
 
 const TEAM_COLORS = ["#4F46E5", "#F97316", "#10B981", "#EF4444"];
 
-function TeamCard({ team, index }: { team: Team; index: number }) {
+function TeamCard({
+  team,
+  index,
+  positionLabels,
+  heightCategoryLabels,
+  t,
+}: {
+  team: Team;
+  index: number;
+  positionLabels: Record<string, string>;
+  heightCategoryLabels: Record<string, string>;
+  t: (key: string, values?: Record<string, string | number>) => string;
+}) {
   const borderColor = TEAM_COLORS[index % TEAM_COLORS.length];
 
   return (
@@ -289,7 +312,7 @@ function TeamCard({ team, index }: { team: Team; index: number }) {
             {team.name}
           </Typography>
           <Chip
-            label={`Qualidade: ${team.total_quality}`}
+            label={t("team.quality", { value: team.total_quality })}
             size="small"
             sx={{
               backgroundColor: `${borderColor}14`,
@@ -311,14 +334,14 @@ function TeamCard({ team, index }: { team: Team; index: number }) {
                   {tp.player.name}
                 </Typography>
                 <Chip
-                  label={POSITION_LABELS[tp.player.position]}
+                  label={positionLabels[tp.player.position]}
                   size="small"
                   variant="outlined"
                 />
               </Box>
               <Box className="flex items-center gap-1">
                 <Chip
-                  label={HEIGHT_CATEGORY_LABELS[tp.player.height_category]}
+                  label={heightCategoryLabels[tp.player.height_category]}
                   size="small"
                 />
                 <Rating
@@ -337,7 +360,7 @@ function TeamCard({ team, index }: { team: Team; index: number }) {
           color="text.secondary"
           className="mt-2 block"
         >
-          {team.player_count} jogadores
+          {t("team.playerCount", { count: team.player_count })}
         </Typography>
       </CardContent>
     </Card>

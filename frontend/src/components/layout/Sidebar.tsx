@@ -17,16 +17,10 @@ import ShuffleIcon from "@mui/icons-material/Shuffle";
 import HistoryIcon from "@mui/icons-material/History";
 import LogoutIcon from "@mui/icons-material/Logout";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
+import { useTranslations } from "next-intl";
 import { useAuthStore } from "@/stores/authStore";
 
 const DRAWER_WIDTH = 260;
-
-const navItems = [
-  { label: "Dashboard", href: "/dashboard", icon: <DashboardIcon /> },
-  { label: "Jogadores", href: "/players", icon: <PeopleIcon /> },
-  { label: "Dividir Times", href: "/division", icon: <ShuffleIcon /> },
-  { label: "Histórico", href: "/history", icon: <HistoryIcon /> },
-];
 
 interface SidebarProps {
   open: boolean;
@@ -35,9 +29,17 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ open, onClose, variant }: SidebarProps) {
+  const t = useTranslations("layout");
   const pathname = usePathname();
   const logout = useAuthStore((s) => s.logout);
   const user = useAuthStore((s) => s.user);
+
+  const navItems = [
+    { label: t("nav.dashboard"), href: "/dashboard", icon: <DashboardIcon /> },
+    { label: t("nav.players"), href: "/players", icon: <PeopleIcon /> },
+    { label: t("nav.divideTeams"), href: "/division", icon: <ShuffleIcon /> },
+    { label: t("nav.history"), href: "/history", icon: <HistoryIcon /> },
+  ];
 
   const drawerContent = (
     <Box className="flex h-full flex-col px-1">
@@ -103,7 +105,7 @@ export default function Sidebar({ open, onClose, variant }: SidebarProps) {
             <ListItemIcon sx={{ minWidth: 40 }}>
               <LogoutIcon />
             </ListItemIcon>
-            <ListItemText primary="Sair" />
+            <ListItemText primary={t("logout")} />
           </ListItemButton>
         </ListItem>
       </List>

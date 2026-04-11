@@ -1,0 +1,14 @@
+{
+  "title": "Histórico de Divisões",
+  "empty": "Nenhuma divisão realizada ainda",
+  "createdBy": "Criado por {name}",
+  "twoTeams": "2 Times",
+  "fourTeams": "4 Times",
+  "playerCount": "{count} jogadores",
+  "detail": {
+    "back": "Voltar",
+    "title": "Divisão {date}",
+    "subtitle": "{teams} — Criado por {name}",
+    "quality": "Qualidade: {value}"
+  }
+}

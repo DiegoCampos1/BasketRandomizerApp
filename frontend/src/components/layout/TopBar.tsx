@@ -18,15 +18,17 @@ import Button from "@mui/material/Button";
 import Divider from "@mui/material/Divider";
 import MenuIcon from "@mui/icons-material/Menu";
 import NotificationsIcon from "@mui/icons-material/Notifications";
+import { useTranslations } from "next-intl";
 import { useAuthStore } from "@/stores/authStore";
 import { useNotifications, useUnreadCount } from "@/hooks/notifications/useNotifications";
 import { useNotificationMutations } from "@/hooks/notifications/useNotificationMutations";
+import LanguageSwitcher from "./LanguageSwitcher";
 
-const PAGE_TITLES: Record<string, string> = {
-  "/dashboard": "Dashboard",
-  "/players": "Jogadores",
-  "/division": "Dividir Times",
-  "/history": "Histórico",
+const PAGE_TITLE_KEYS: Record<string, string> = {
+  "/dashboard": "pageTitles.dashboard",
+  "/players": "pageTitles.players",
+  "/division": "pageTitles.divideTeams",
+  "/history": "pageTitles.history",
 };
 
 interface TopBarProps {
@@ -35,6 +37,8 @@ interface TopBarProps {
 }
 
 export default function TopBar({ onMenuClick, showMenuButton }: TopBarProps) {
+  const t = useTranslations("layout");
+  const tc = useTranslations("common");
   const user = useAuthStore((s) => s.user);
   const pathname = usePathname();
   const router = useRouter();
@@ -48,9 +52,12 @@ export default function TopBar({ onMenuClick, showMenuButton }: TopBarProps) {
 
   const unreadCount = unreadData?.count ?? 0;
 
-  const pageTitle =
-    PAGE_TITLES[pathname] ||
-    (pathname.startsWith("/history/") ? "Detalhes da Divisão" : "");
+  const titleKey = PAGE_TITLE_KEYS[pathname];
+  const pageTitle = titleKey
+    ? t(titleKey)
+    : pathname.startsWith("/history/")
+      ? t("pageTitles.divisionDetail")
+      : "";
 
   const initials = user
     ? (user.first_name?.[0] || user.email[0]).toUpperCase()
@@ -69,12 +76,12 @@ export default function TopBar({ onMenuClick, showMenuButton }: TopBarProps) {
   const formatTimeAgo = (dateStr: string) => {
     const diff = Date.now() - new Date(dateStr).getTime();
     const minutes = Math.floor(diff / 60000);
-    if (minutes < 1) return "agora";
-    if (minutes < 60) return `${minutes}min`;
+    if (minutes < 1) return tc("time.now");
+    if (minutes < 60) return tc("time.minutesAgo", { minutes });
     const hours = Math.floor(minutes / 60);
-    if (hours < 24) return `${hours}h`;
+    if (hours < 24) return tc("time.hoursAgo", { hours });
     const days = Math.floor(hours / 24);
-    return `${days}d`;
+    return tc("time.daysAgo", { days });
   };
 
   return (
@@ -108,6 +115,7 @@ export default function TopBar({ onMenuClick, showMenuButton }: TopBarProps) {
           {pageTitle}
         </Typography>
         <Box className="flex items-center gap-2">
+          <LanguageSwitcher />
           <IconButton onClick={(e) => setAnchorEl(e.currentTarget)}>
             <Badge badgeContent={unreadCount} color="secondary">
               <NotificationsIcon />
@@ -148,11 +156,11 @@ export default function TopBar({ onMenuClick, showMenuButton }: TopBarProps) {
       >
         <Box className="flex items-center justify-between px-4 py-3">
           <Typography variant="subtitle1" className="font-semibold">
-            Notificações
+            {t("notifications.title")}
           </Typography>
           {unreadCount > 0 && (
             <Button size="small" onClick={handleMarkAllRead}>
-              Marcar todas como lidas
+              {t("notifications.markAllRead")}
             </Button>
           )}
         </Box>
@@ -160,7 +168,7 @@ export default function TopBar({ onMenuClick, showMenuButton }: TopBarProps) {
         {notifications.length === 0 ? (
           <Box className="px-4 py-8 text-center">
             <Typography variant="body2" color="text.secondary">
-              Nenhuma notificação
+              {t("notifications.empty")}
             </Typography>
           </Box>
         ) : (

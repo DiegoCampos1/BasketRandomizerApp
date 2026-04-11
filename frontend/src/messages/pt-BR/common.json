@@ -1,0 +1,17 @@
+{
+  "buttons": {
+    "cancel": "Cancelar",
+    "save": "Salvar",
+    "create": "Criar",
+    "back": "Voltar"
+  },
+  "confirm": {
+    "deletePlayer": "Tem certeza que deseja excluir este jogador?"
+  },
+  "time": {
+    "now": "agora",
+    "minutesAgo": "{minutes}min",
+    "hoursAgo": "{hours}h",
+    "daysAgo": "{days}d"
+  }
+}

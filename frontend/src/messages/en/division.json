@@ -1,0 +1,25 @@
+{
+  "title": "Divide Teams",
+  "resultTitle": "Divided Teams",
+  "newDivision": "New Division",
+  "savedSuccess": "Division saved successfully!",
+  "modeLabel": "Division mode",
+  "twoTeams": "2 Teams",
+  "fourTeams": "4 Teams (2 groups)",
+  "presentPlayers": "Present players ({selected}/{max} selected)",
+  "selectAll": "Select all",
+  "clear": "Clear",
+  "divideButton": "Divide Teams",
+  "dividing": "Dividing...",
+  "team": {
+    "quality": "Quality: {value}",
+    "playerCount": "{count} players"
+  },
+  "errors": {
+    "maxPlayers": "Maximum of {max} players per division.",
+    "maxSelected": "Maximum of {max} players. Only the first {max} were selected.",
+    "minPlayers": "Select at least {min} players for {teams} teams.",
+    "divisionError": "Error dividing teams.",
+    "swapError": "Error swapping players."
+  }
+}

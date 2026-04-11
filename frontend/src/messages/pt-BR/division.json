@@ -1,0 +1,25 @@
+{
+  "title": "Dividir Times",
+  "resultTitle": "Times Divididos",
+  "newDivision": "Nova Divisão",
+  "savedSuccess": "Divisão salva com sucesso!",
+  "modeLabel": "Modo de divisão",
+  "twoTeams": "2 Times",
+  "fourTeams": "4 Times (2 grupos)",
+  "presentPlayers": "Jogadores presentes ({selected}/{max} selecionados)",
+  "selectAll": "Selecionar todos",
+  "clear": "Limpar",
+  "divideButton": "Dividir Times",
+  "dividing": "Dividindo...",
+  "team": {
+    "quality": "Qualidade: {value}",
+    "playerCount": "{count} jogadores"
+  },
+  "errors": {
+    "maxPlayers": "Máximo de {max} jogadores por divisão.",
+    "maxSelected": "Máximo de {max} jogadores. Apenas os {max} primeiros foram selecionados.",
+    "minPlayers": "Selecione pelo menos {min} jogadores para {teams} times.",
+    "divisionError": "Erro ao dividir times.",
+    "swapError": "Erro ao trocar jogadores."
+  }
+}

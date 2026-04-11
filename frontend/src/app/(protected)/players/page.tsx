@@ -25,18 +25,19 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import SportsBasketballIcon from "@mui/icons-material/SportsBasketball";
 import StraightenIcon from "@mui/icons-material/Straighten";
+import { useTranslations } from "next-intl";
 import { usePlayers } from "@/hooks/players/usePlayers";
 import { usePlayerMutations } from "@/hooks/players/usePlayerMutations";
 import { useAuthStore } from "@/stores/authStore";
-import {
-  Player,
-  Position,
-  POSITION_LABELS,
-} from "@/types/player";
+import { usePlayerLabels } from "@/hooks/usePlayerLabels";
+import { Player, Position } from "@/types/player";
 
 const POSITIONS: Position[] = ["guard", "forward", "center"];
 
 export default function PlayersPage() {
+  const t = useTranslations("players");
+  const tc = useTranslations("common");
+  const { positionLabels } = usePlayerLabels();
   const { data: players = [] } = usePlayers();
   const { createPlayer, updatePlayer, deletePlayer, approvePlayer } =
     usePlayerMutations();
@@ -112,7 +113,6 @@ export default function PlayersPage() {
     };
 
     if (isPendingApproval && editingPlayer) {
-      // First update player data, then approve
       await updatePlayer.mutateAsync({ id: editingPlayer.id, data });
       await approvePlayer.mutateAsync({
         id: editingPlayer.id,
@@ -128,7 +128,7 @@ export default function PlayersPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Tem certeza que deseja excluir este jogador?")) return;
+    if (!confirm(tc("confirm.deletePlayer"))) return;
     await deletePlayer.mutateAsync(id);
   };
 
@@ -137,11 +137,11 @@ export default function PlayersPage() {
       <Box className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <Box className="flex items-center justify-between sm:justify-start gap-3">
           <Typography variant="h4" className="font-bold">
-            Jogadores
+            {t("title")}
           </Typography>
           {players.length > 0 && (
             <Chip
-              label={`${approvedPlayers.length} cadastrados`}
+              label={t("registered", { count: approvedPlayers.length })}
               size="small"
               color="primary"
               variant="outlined"
@@ -150,7 +150,7 @@ export default function PlayersPage() {
         </Box>
         <Box className="flex gap-2">
           {shareUrl && (
-            <Tooltip title={copied ? "Copiado!" : "Copiar link de cadastro"}>
+            <Tooltip title={copied ? t("copied") : t("copyTooltip")}>
               <Button
                 variant="outlined"
                 startIcon={<ContentCopyIcon />}
@@ -158,7 +158,7 @@ export default function PlayersPage() {
                 color={copied ? "success" : "primary"}
                 className="w-full sm:w-auto"
               >
-                {copied ? "Copiado!" : "Link de cadastro"}
+                {copied ? t("copied") : t("copyLink")}
               </Button>
             </Tooltip>
           )}
@@ -168,7 +168,7 @@ export default function PlayersPage() {
             onClick={openCreate}
             className="w-full sm:w-auto"
           >
-            Adicionar Jogador
+            {t("addPlayer")}
           </Button>
         </Box>
       </Box>
@@ -179,27 +179,19 @@ export default function PlayersPage() {
           onClose={() => setShowTips(false)}
           className="mb-4"
         >
-          <AlertTitle className="font-bold">
-            Dicas para um bom cadastro
-          </AlertTitle>
+          <AlertTitle className="font-bold">{t("tips.title")}</AlertTitle>
           <ul className="m-0 flex flex-col gap-1 pl-4">
             <li>
-              <strong>Qualidade:</strong> avalie em relação aos jogadores da sua
-              organização, não a profissionais. O melhor jogador de cada posição
-              deve receber 5 estrelas e os demais devem ser avaliados em
-              comparação a ele.
+              <strong>{t("dialog.qualityLabel")}:</strong> {t("tips.quality")}
             </li>
             <li>
-              <strong>Altura:</strong> preencha com precisão — o algoritmo usa
-              esse dado para balancear os times.
+              <strong>{t("dialog.heightLabel")}:</strong> {t("tips.height")}
             </li>
             <li>
-              <strong>Posição:</strong> cadastre a posição principal do jogador
-              para uma melhor distribuição entre os times.
+              <strong>{t("dialog.positionLabel")}:</strong> {t("tips.position")}
             </li>
             <li>
-              <strong>Link de cadastro:</strong> compartilhe o link com seus
-              jogadores para que eles se cadastrem sozinhos.
+              <strong>{t("copyLink")}:</strong> {t("tips.shareLink")}
             </li>
           </ul>
         </Alert>
@@ -210,7 +202,7 @@ export default function PlayersPage() {
         <Box className="mb-6">
           <Box className="mb-3 flex items-center gap-2">
             <Typography variant="h6" className="font-bold">
-              Aguardando aprovação
+              {t("pending.title")}
             </Typography>
             <Chip
               label={pendingPlayers.length}
@@ -246,7 +238,7 @@ export default function PlayersPage() {
                         {player.name}
                       </Typography>
                       <Chip
-                        label="Pendente"
+                        label={t("pending.chip")}
                         size="small"
                         color="warning"
                         sx={{ fontWeight: 600 }}
@@ -267,7 +259,7 @@ export default function PlayersPage() {
                   <Box className="flex flex-wrap gap-1.5">
                     <Chip
                       icon={<SportsBasketballIcon />}
-                      label={POSITION_LABELS[player.position]}
+                      label={positionLabels[player.position]}
                       size="small"
                       variant="outlined"
                       sx={{ fontWeight: 500 }}
@@ -292,17 +284,17 @@ export default function PlayersPage() {
         <Card>
           <CardContent className="flex flex-col items-center gap-3 py-16 text-center">
             <Typography variant="h6" color="text.secondary">
-              Nenhum jogador cadastrado
+              {t("empty.title")}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Adicione jogadores ou compartilhe o link de cadastro
+              {t("empty.subtitle")}
             </Typography>
             <Button
               variant="outlined"
               startIcon={<AddIcon />}
               onClick={openCreate}
             >
-              Adicionar Primeiro Jogador
+              {t("empty.addFirst")}
             </Button>
           </CardContent>
         </Card>
@@ -311,7 +303,7 @@ export default function PlayersPage() {
           <Box>
             {pendingPlayers.length > 0 && (
               <Typography variant="h6" className="mb-3 font-bold">
-                Jogadores aprovados
+                {t("approved.title")}
               </Typography>
             )}
             <Box className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -363,7 +355,7 @@ export default function PlayersPage() {
                     <Box className="mb-3 flex flex-wrap gap-1.5">
                       <Chip
                         icon={<SportsBasketballIcon />}
-                        label={POSITION_LABELS[player.position]}
+                        label={positionLabels[player.position]}
                         size="small"
                         variant="outlined"
                         sx={{ fontWeight: 500 }}
@@ -400,38 +392,37 @@ export default function PlayersPage() {
       >
         <DialogTitle className="font-bold">
           {isPendingApproval
-            ? "Aprovar Jogador"
+            ? t("dialog.titleApprove")
             : editingPlayer
-              ? "Editar Jogador"
-              : "Novo Jogador"}
+              ? t("dialog.titleEdit")
+              : t("dialog.titleCreate")}
         </DialogTitle>
         <Divider />
         <DialogContent className="flex flex-col gap-4" sx={{ pt: 3 }}>
           {isPendingApproval && (
             <Alert severity="warning" className="mb-2">
-              Este jogador se cadastrou pelo link público. Revise os dados e dê
-              uma nota para aprová-lo.
+              {t("dialog.approveAlert")}
             </Alert>
           )}
           <TextField
-            label="Nome"
+            label={t("dialog.nameLabel")}
             value={form.name}
             onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
             fullWidth
             autoFocus
           />
           <TextField
-            label="Altura (cm)"
+            label={t("dialog.heightLabel")}
             type="number"
             value={form.height_cm}
             onChange={(e) =>
               setForm((f) => ({ ...f, height_cm: e.target.value }))
             }
             fullWidth
-            helperText="Ex: 180"
+            helperText={t("dialog.heightHelper")}
           />
           <TextField
-            label="Posição"
+            label={t("dialog.positionLabel")}
             select
             value={form.position}
             onChange={(e) =>
@@ -444,13 +435,16 @@ export default function PlayersPage() {
           >
             {POSITIONS.map((pos) => (
               <MenuItem key={pos} value={pos}>
-                {POSITION_LABELS[pos]}
+                {positionLabels[pos]}
               </MenuItem>
             ))}
           </TextField>
           <Box>
             <Typography variant="body2" color="text.secondary" className="mb-1">
-              Qualidade {isPendingApproval && <span>(obrigatório para aprovar)</span>}
+              {t("dialog.qualityLabel")}{" "}
+              {isPendingApproval && (
+                <span>{t("dialog.qualityRequired")}</span>
+              )}
             </Typography>
             <Rating
               value={form.quality}
@@ -465,16 +459,22 @@ export default function PlayersPage() {
         <Divider />
         <DialogActions className="px-6 py-4">
           <Button onClick={() => setDialogOpen(false)} color="inherit">
-            Cancelar
+            {tc("buttons.cancel")}
           </Button>
           <Button
             variant="contained"
             onClick={handleSave}
             size="large"
-            disabled={!isFormValid || (!isPendingApproval && isEditing && !hasChanges)}
+            disabled={
+              !isFormValid || (!isPendingApproval && isEditing && !hasChanges)
+            }
             color={isPendingApproval ? "warning" : "primary"}
           >
-            {isPendingApproval ? "Aprovar" : editingPlayer ? "Salvar" : "Criar"}
+            {isPendingApproval
+              ? t("dialog.buttonApprove")
+              : editingPlayer
+                ? t("dialog.buttonSave")
+                : t("dialog.buttonCreate")}
           </Button>
         </DialogActions>
       </Dialog>

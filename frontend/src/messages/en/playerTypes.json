@@ -1,0 +1,12 @@
+{
+  "positions": {
+    "guard": "Guard",
+    "forward": "Forward",
+    "center": "Center"
+  },
+  "heightCategories": {
+    "small": "Small",
+    "medium": "Medium",
+    "tall": "Tall"
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "title": "Jogadores",
+  "registered": "{count} cadastrados",
+  "copyLink": "Link de cadastro",
+  "copied": "Copiado!",
+  "copyTooltip": "Copiar link de cadastro",
+  "addPlayer": "Adicionar Jogador",
+  "tips": {
+    "title": "Dicas para um bom cadastro",
+    "quality": "avalie em relação aos jogadores da sua organização, não a profissionais. O melhor jogador de cada posição deve receber 5 estrelas e os demais devem ser avaliados em comparação a ele.",
+    "height": "preencha com precisão — o algoritmo usa esse dado para balancear os times.",
+    "position": "cadastre a posição principal do jogador para uma melhor distribuição entre os times.",
+    "shareLink": "compartilhe o link com seus jogadores para que eles se cadastrem sozinhos."
+  },
+  "pending": {
+    "title": "Aguardando aprovação",
+    "chip": "Pendente"
+  },
+  "approved": {
+    "title": "Jogadores aprovados"
+  },
+  "empty": {
+    "title": "Nenhum jogador cadastrado",
+    "subtitle": "Adicione jogadores ou compartilhe o link de cadastro",
+    "addFirst": "Adicionar Primeiro Jogador"
+  },
+  "dialog": {
+    "titleCreate": "Novo Jogador",
+    "titleEdit": "Editar Jogador",
+    "titleApprove": "Aprovar Jogador",
+    "approveAlert": "Este jogador se cadastrou pelo link público. Revise os dados e dê uma nota para aprová-lo.",
+    "nameLabel": "Nome",
+    "heightLabel": "Altura (cm)",
+    "heightHelper": "Ex: 180",
+    "positionLabel": "Posição",
+    "qualityLabel": "Qualidade",
+    "qualityRequired": "(obrigatório para aprovar)",
+    "buttonApprove": "Aprovar",
+    "buttonSave": "Salvar",
+    "buttonCreate": "Criar"
+  }
+}

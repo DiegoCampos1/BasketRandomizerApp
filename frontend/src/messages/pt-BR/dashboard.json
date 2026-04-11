@@ -1,0 +1,7 @@
+{
+  "greeting": "Olá, {name}!",
+  "registeredPlayers": "Jogadores cadastrados",
+  "divisionsPerformed": "Divisões realizadas",
+  "divideTeams": "Dividir Times",
+  "buildTeamsToday": "Montar as equipes do dia"
+}

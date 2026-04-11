@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 const PUBLIC_PATHS = ["/login", "/register"];
+const SUPPORTED_LOCALES = ["pt-BR", "en"];
+const DEFAULT_LOCALE = "pt-BR";
 
 function isPublicPath(pathname: string) {
   if (PUBLIC_PATHS.some((p) => pathname.startsWith(p))) return true;
@@ -18,6 +20,7 @@ export function middleware(request: NextRequest) {
   const isAuthPage =
     pathname.startsWith("/login") || pathname.startsWith("/register");
 
+  // Auth routing
   if (!token && !isPublic) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
@@ -26,7 +29,13 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
-  return NextResponse.next();
+  // Locale: ensure NEXT_LOCALE cookie exists
+  const response = NextResponse.next();
+  const localeCookie = request.cookies.get("NEXT_LOCALE")?.value;
+  if (!localeCookie || !SUPPORTED_LOCALES.includes(localeCookie)) {
+    response.cookies.set("NEXT_LOCALE", DEFAULT_LOCALE, { path: "/" });
+  }
+  return response;
 }
 
 export const config = {

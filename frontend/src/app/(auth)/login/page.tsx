@@ -11,10 +11,12 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Alert from "@mui/material/Alert";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
+import { useTranslations } from "next-intl";
 import { login } from "@/lib/api/auth";
 import { useAuthStore } from "@/stores/authStore";
 
 export default function LoginPage() {
+  const t = useTranslations("auth");
   const router = useRouter();
   const authLogin = useAuthStore((s) => s.login);
   const [email, setEmail] = useState("");
@@ -32,7 +34,7 @@ export default function LoginPage() {
       await authLogin(tokens.access, tokens.refresh);
       router.push("/dashboard");
     } catch {
-      setError("Email ou senha inválidos.");
+      setError(t("login.error"));
     } finally {
       setLoading(false);
     }
@@ -46,10 +48,10 @@ export default function LoginPage() {
             sx={{ fontSize: 48, color: "secondary.main", mb: 1 }}
           />
           <Typography variant="h5" className="font-bold">
-            Sorteador de Times
+            {t("login.title")}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Faça login para continuar
+            {t("login.subtitle")}
           </Typography>
         </Box>
 
@@ -61,7 +63,7 @@ export default function LoginPage() {
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <TextField
-            label="Email"
+            label={t("login.emailLabel")}
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -70,7 +72,7 @@ export default function LoginPage() {
             autoFocus
           />
           <TextField
-            label="Senha"
+            label={t("login.passwordLabel")}
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -84,17 +86,17 @@ export default function LoginPage() {
             disabled={loading}
             fullWidth
           >
-            {loading ? "Entrando..." : "Entrar"}
+            {loading ? t("login.submitting") : t("login.submitButton")}
           </Button>
         </form>
         <Box className="my-4">
           <Typography variant="body2" className="mt-4 text-center">
-            Não tem conta?{" "}
+            {t("login.noAccount")}{" "}
             <Link
               href="/register"
               className="font-semibold text-[#4F46E5] hover:underline"
             >
-              Cadastre-se
+              {t("login.register")}
             </Link>
           </Typography>
         </Box>

@@ -1,0 +1,17 @@
+{
+  "buttons": {
+    "cancel": "Cancel",
+    "save": "Save",
+    "create": "Create",
+    "back": "Back"
+  },
+  "confirm": {
+    "deletePlayer": "Are you sure you want to delete this player?"
+  },
+  "time": {
+    "now": "now",
+    "minutesAgo": "{minutes}min",
+    "hoursAgo": "{hours}h",
+    "daysAgo": "{days}d"
+  }
+}

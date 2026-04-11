@@ -9,11 +9,13 @@ import CardActionArea from "@mui/material/CardActionArea";
 import PeopleIcon from "@mui/icons-material/People";
 import ShuffleIcon from "@mui/icons-material/Shuffle";
 import HistoryIcon from "@mui/icons-material/History";
+import { useTranslations } from "next-intl";
 import { useAuthStore } from "@/stores/authStore";
 import { usePlayers } from "@/hooks/players/usePlayers";
 import { useDivisions } from "@/hooks/divisions/useDivisions";
 
 export default function DashboardPage() {
+  const t = useTranslations("dashboard");
   const router = useRouter();
   const user = useAuthStore((s) => s.user);
   const { data: players } = usePlayers();
@@ -22,7 +24,7 @@ export default function DashboardPage() {
   return (
     <Box gap={2} className="flex flex-col">
       <Typography variant="h4" className="mb-6">
-        Olá, {user?.first_name || user?.email}!
+        {t("greeting", { name: user?.first_name || user?.email || "" })}
       </Typography>
 
       <Box className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 mt-2">
@@ -35,7 +37,7 @@ export default function DashboardPage() {
                   {players?.length ?? 0}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  Jogadores cadastrados
+                  {t("registeredPlayers")}
                 </Typography>
               </Box>
             </CardContent>
@@ -51,7 +53,7 @@ export default function DashboardPage() {
                   {divisions?.length ?? 0}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  Divisões realizadas
+                  {t("divisionsPerformed")}
                 </Typography>
               </Box>
             </CardContent>
@@ -67,10 +69,10 @@ export default function DashboardPage() {
               <ShuffleIcon sx={{ fontSize: 48, color: "secondary.main" }} />
               <Box>
                 <Typography variant="h6" className="font-bold">
-                  Dividir Times
+                  {t("divideTeams")}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  Montar as equipes do dia
+                  {t("buildTeamsToday")}
                 </Typography>
               </Box>
             </CardContent>

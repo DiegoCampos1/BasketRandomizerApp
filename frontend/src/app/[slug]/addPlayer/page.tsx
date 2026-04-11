@@ -13,12 +13,16 @@ import Alert from "@mui/material/Alert";
 import CircularProgress from "@mui/material/CircularProgress";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
-import { Position, POSITION_LABELS } from "@/types/player";
+import { useTranslations } from "next-intl";
+import { usePlayerLabels } from "@/hooks/usePlayerLabels";
+import { Position } from "@/types/player";
 import { publicCreatePlayer, getOrganizationInfo } from "@/lib/api/players";
 
 const POSITIONS: Position[] = ["guard", "forward", "center"];
 
 export default function PublicAddPlayerPage() {
+  const t = useTranslations("addPlayer");
+  const { positionLabels } = usePlayerLabels();
   const params = useParams();
   const slug = params.slug as string;
 
@@ -73,10 +77,10 @@ export default function PublicAddPlayerPage() {
           const messages = Object.values(data).flat().join(" ");
           setError(messages);
         } else {
-          setError("Erro ao cadastrar.");
+          setError(t("error"));
         }
       } else {
-        setError("Erro ao cadastrar.");
+        setError(t("error"));
       }
     } finally {
       setLoading(false);
@@ -96,10 +100,10 @@ export default function PublicAddPlayerPage() {
       <Card className="w-full max-w-md">
         <CardContent className="flex flex-col items-center gap-4 p-8 text-center">
           <Typography variant="h5" className="font-bold">
-            Organização não encontrada
+            {t("orgNotFound")}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Verifique se o link está correto.
+            {t("checkLink")}
           </Typography>
         </CardContent>
       </Card>
@@ -114,11 +118,13 @@ export default function PublicAddPlayerPage() {
             sx={{ fontSize: 64, color: "success.main" }}
           />
           <Typography variant="h5" className="font-bold">
-            Cadastro enviado!
+            {t("successTitle")}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Aguarde a aprovação do administrador da organização{" "}
-            <strong>{orgName}</strong>.
+            {t.rich("successMessage", {
+              org: orgName,
+              strong: (chunks) => <strong>{chunks}</strong>,
+            })}
           </Typography>
           <Button
             variant="outlined"
@@ -127,7 +133,7 @@ export default function PublicAddPlayerPage() {
               setForm({ name: "", height_cm: "", position: "guard" });
             }}
           >
-            Cadastrar outro jogador
+            {t("registerAnother")}
           </Button>
         </CardContent>
       </Card>
@@ -145,7 +151,7 @@ export default function PublicAddPlayerPage() {
             {orgName}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Cadastre-se como jogador
+            {t("subtitle")}
           </Typography>
         </Box>
 
@@ -157,7 +163,7 @@ export default function PublicAddPlayerPage() {
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <TextField
-            label="Nome"
+            label={t("nameLabel")}
             value={form.name}
             onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
             required
@@ -165,7 +171,7 @@ export default function PublicAddPlayerPage() {
             autoFocus
           />
           <TextField
-            label="Altura (cm)"
+            label={t("heightLabel")}
             type="number"
             value={form.height_cm}
             onChange={(e) =>
@@ -173,10 +179,10 @@ export default function PublicAddPlayerPage() {
             }
             required
             fullWidth
-            helperText="Ex: 180"
+            helperText={t("heightHelper")}
           />
           <TextField
-            label="Posição"
+            label={t("positionLabel")}
             select
             value={form.position}
             onChange={(e) =>
@@ -189,7 +195,7 @@ export default function PublicAddPlayerPage() {
           >
             {POSITIONS.map((pos) => (
               <MenuItem key={pos} value={pos}>
-                {POSITION_LABELS[pos]}
+                {positionLabels[pos]}
               </MenuItem>
             ))}
           </TextField>
@@ -200,7 +206,7 @@ export default function PublicAddPlayerPage() {
             disabled={loading || !isFormValid}
             fullWidth
           >
-            {loading ? "Enviando..." : "Cadastrar"}
+            {loading ? t("submitting") : t("submitButton")}
           </Button>
         </form>
       </CardContent>

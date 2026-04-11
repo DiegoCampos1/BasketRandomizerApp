@@ -1,0 +1,14 @@
+{
+  "title": "Division History",
+  "empty": "No divisions performed yet",
+  "createdBy": "Created by {name}",
+  "twoTeams": "2 Teams",
+  "fourTeams": "4 Teams",
+  "playerCount": "{count} players",
+  "detail": {
+    "back": "Back",
+    "title": "Division {date}",
+    "subtitle": "{teams} — Created by {name}",
+    "quality": "Quality: {value}"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "subtitle": "Register as a player",
+  "orgNotFound": "Organization not found",
+  "checkLink": "Check that the link is correct.",
+  "successTitle": "Registration submitted!",
+  "successMessage": "Wait for the administrator of <strong>{org}</strong> to approve.",
+  "registerAnother": "Register another player",
+  "nameLabel": "Name",
+  "heightLabel": "Height (cm)",
+  "heightHelper": "E.g.: 180",
+  "positionLabel": "Position",
+  "submitButton": "Register",
+  "submitting": "Submitting...",
+  "error": "Registration error."
+}

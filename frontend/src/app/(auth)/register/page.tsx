@@ -11,10 +11,12 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Alert from "@mui/material/Alert";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
+import { useTranslations } from "next-intl";
 import { register } from "@/lib/api/auth";
 import { useAuthStore } from "@/stores/authStore";
 
 export default function RegisterPage() {
+  const t = useTranslations("auth");
   const router = useRouter();
   const authLogin = useAuthStore((s) => s.login);
   const [form, setForm] = useState({
@@ -37,7 +39,7 @@ export default function RegisterPage() {
     setError("");
 
     if (form.password !== form.password_confirm) {
-      setError("Senhas não coincidem.");
+      setError(t("register.passwordMismatch"));
       return;
     }
 
@@ -57,10 +59,10 @@ export default function RegisterPage() {
           const messages = Object.values(data).flat().join(" ");
           setError(messages);
         } else {
-          setError("Erro ao criar conta.");
+          setError(t("register.error"));
         }
       } else {
-        setError("Erro ao criar conta.");
+        setError(t("register.error"));
       }
     } finally {
       setLoading(false);
@@ -75,10 +77,10 @@ export default function RegisterPage() {
             sx={{ fontSize: 48, color: "secondary.main", mb: 1 }}
           />
           <Typography variant="h5" className="font-bold">
-            Criar Conta
+            {t("register.title")}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Cadastre-se e crie sua organização
+            {t("register.subtitle")}
           </Typography>
         </Box>
 
@@ -90,7 +92,7 @@ export default function RegisterPage() {
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <TextField
-            label="Nome"
+            label={t("register.nameLabel")}
             value={form.name}
             onChange={handleChange("name")}
             required
@@ -98,7 +100,7 @@ export default function RegisterPage() {
             autoFocus
           />
           <TextField
-            label="Email"
+            label={t("register.emailLabel")}
             type="email"
             value={form.email}
             onChange={handleChange("email")}
@@ -106,7 +108,7 @@ export default function RegisterPage() {
             fullWidth
           />
           <TextField
-            label="Senha"
+            label={t("register.passwordLabel")}
             type="password"
             value={form.password}
             onChange={handleChange("password")}
@@ -114,7 +116,7 @@ export default function RegisterPage() {
             fullWidth
           />
           <TextField
-            label="Confirmar Senha"
+            label={t("register.confirmPasswordLabel")}
             type="password"
             value={form.password_confirm}
             onChange={handleChange("password_confirm")}
@@ -122,12 +124,12 @@ export default function RegisterPage() {
             fullWidth
           />
           <TextField
-            label="Nome da Organização"
+            label={t("register.orgNameLabel")}
             value={form.organization_name}
             onChange={handleChange("organization_name")}
             required
             fullWidth
-            helperText="Ex: Boomerangs Basketball, Gol Contra FC"
+            helperText={t("register.orgNameHelper")}
           />
           <Button
             type="submit"
@@ -136,17 +138,17 @@ export default function RegisterPage() {
             disabled={loading}
             fullWidth
           >
-            {loading ? "Criando..." : "Criar Conta"}
+            {loading ? t("register.submitting") : t("register.submitButton")}
           </Button>
         </form>
         <Box className="mt-4">
           <Typography variant="body2" className="text-center">
-            Já tem conta?{" "}
+            {t("register.hasAccount")}{" "}
             <Link
               href="/login"
               className="font-semibold text-[#4F46E5] hover:underline"
             >
-              Faça login
+              {t("register.login")}
             </Link>
           </Typography>
         </Box>

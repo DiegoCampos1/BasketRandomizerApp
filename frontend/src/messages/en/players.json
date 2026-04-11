@@ -1,0 +1,42 @@
+{
+  "title": "Players",
+  "registered": "{count} registered",
+  "copyLink": "Registration link",
+  "copied": "Copied!",
+  "copyTooltip": "Copy registration link",
+  "addPlayer": "Add Player",
+  "tips": {
+    "title": "Tips for good registration",
+    "quality": "rate players relative to your organization, not professionals. The best player at each position should get 5 stars, and others should be rated in comparison.",
+    "height": "fill in accurately — the algorithm uses this data to balance the teams.",
+    "position": "register the player's main position for better distribution across teams.",
+    "shareLink": "share the link with your players so they can register themselves."
+  },
+  "pending": {
+    "title": "Awaiting approval",
+    "chip": "Pending"
+  },
+  "approved": {
+    "title": "Approved players"
+  },
+  "empty": {
+    "title": "No players registered",
+    "subtitle": "Add players or share the registration link",
+    "addFirst": "Add First Player"
+  },
+  "dialog": {
+    "titleCreate": "New Player",
+    "titleEdit": "Edit Player",
+    "titleApprove": "Approve Player",
+    "approveAlert": "This player registered via the public link. Review their data and give a rating to approve them.",
+    "nameLabel": "Name",
+    "heightLabel": "Height (cm)",
+    "heightHelper": "E.g.: 180",
+    "positionLabel": "Position",
+    "qualityLabel": "Quality",
+    "qualityRequired": "(required for approval)",
+    "buttonApprove": "Approve",
+    "buttonSave": "Save",
+    "buttonCreate": "Create"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "subtitle": "Cadastre-se como jogador",
+  "orgNotFound": "Organização não encontrada",
+  "checkLink": "Verifique se o link está correto.",
+  "successTitle": "Cadastro enviado!",
+  "successMessage": "Aguarde a aprovação do administrador da organização <strong>{org}</strong>.",
+  "registerAnother": "Cadastrar outro jogador",
+  "nameLabel": "Nome",
+  "heightLabel": "Altura (cm)",
+  "heightHelper": "Ex: 180",
+  "positionLabel": "Posição",
+  "submitButton": "Cadastrar",
+  "submitting": "Enviando...",
+  "error": "Erro ao cadastrar."
+}
