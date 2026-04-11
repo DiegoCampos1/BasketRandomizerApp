@@ -10,6 +10,13 @@
   "selectAll": "Selecionar todos",
   "clear": "Limpar",
   "divideButton": "Dividir Times",
+  "tips": {
+    "title": "Como funciona a divisão?",
+    "algorithm": "Usamos um algoritmo de draft serpentina que balanceia os times considerando qualidade (peso 3.0), posição (1.5) e altura (1.0).",
+    "tallCenters": "Pivôs altos com qualidade parecida são automaticamente separados em times diferentes.",
+    "modes": "No modo 4 times, são criados 2 grupos (Vermelho/Preto) com 2 subtimes cada — o placar é acumulativo entre os jogos.",
+    "adjust": "Após a divisão, você pode ajustar manualmente trocando jogadores entre os times."
+  },
   "dividing": "Dividindo...",
   "team": {
     "quality": "Qualidade: {value}",

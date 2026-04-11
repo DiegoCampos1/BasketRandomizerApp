@@ -114,3 +114,4 @@ Sport Creative palette (indigo + orange):
 - Do not save temporary screenshots or logs in the project root. Playwright MCP files go to `.playwright-mcp/` (already in .gitignore)
 - **Testing is mandatory**: Always create backend tests for new features/endpoints. Before finishing, run ALL existing tests (`docker compose exec api python manage.py test`) to ensure nothing is broken. Never ship code without verifying tests pass.
 - **Code quality**: Backend uses flake8 + isort + black (config in `pyproject.toml` and `.flake8`). Run `docker compose exec api black .` + `isort .` + `flake8 .` to format and lint. All 3 must pass clean.
+- **i18n mandatory**: The frontend uses next-intl with cookie-based locale (pt-BR default + en). All new UI text MUST use translation keys from `src/messages/{locale}/`. Never hardcode Portuguese or English strings in components. Add keys to both `pt-BR` and `en` JSON files for every new feature.

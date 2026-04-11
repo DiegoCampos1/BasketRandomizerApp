@@ -11,6 +11,7 @@ import Chip from "@mui/material/Chip";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import Alert from "@mui/material/Alert";
+import AlertTitle from "@mui/material/AlertTitle";
 import Rating from "@mui/material/Rating";
 import ShuffleIcon from "@mui/icons-material/Shuffle";
 import { useTranslations } from "next-intl";
@@ -33,6 +34,7 @@ export default function DivisionPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [showTips, setShowTips] = useState(true);
 
   const togglePlayer = (id: string) => {
     if (!selectedIds.has(id) && selectedIds.size >= MAX_PLAYERS) {
@@ -160,6 +162,22 @@ export default function DivisionPage() {
       <Typography variant="h4" className="mb-6">
         {t("title")}
       </Typography>
+
+      {showTips && (
+        <Alert
+          severity="info"
+          onClose={() => setShowTips(false)}
+          className="mb-4"
+        >
+          <AlertTitle className="font-bold">{t("tips.title")}</AlertTitle>
+          <ul className="m-0 flex flex-col gap-1 pl-4">
+            <li>{t("tips.algorithm")}</li>
+            <li>{t("tips.tallCenters")}</li>
+            <li>{t("tips.modes")}</li>
+            <li>{t("tips.adjust")}</li>
+          </ul>
+        </Alert>
+      )}
 
       {error && (
         <Alert severity="error" className="mb-4">

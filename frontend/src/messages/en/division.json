@@ -10,6 +10,13 @@
   "selectAll": "Select all",
   "clear": "Clear",
   "divideButton": "Divide Teams",
+  "tips": {
+    "title": "How does the division work?",
+    "algorithm": "We use a serpentine draft algorithm that balances teams by quality (weight 3.0), position (1.5), and height (1.0).",
+    "tallCenters": "Tall centers with similar quality are automatically placed on different teams.",
+    "modes": "In 4-team mode, 2 groups (Red/Black) are created with 2 subteams each — the score carries over between games.",
+    "adjust": "After the division, you can manually adjust by swapping players between teams."
+  },
   "dividing": "Dividing...",
   "team": {
     "quality": "Quality: {value}",
