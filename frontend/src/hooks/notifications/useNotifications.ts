@@ -13,6 +13,5 @@ export function useUnreadCount() {
   return useQuery({
     queryKey: notificationKeys.unreadCount(),
     queryFn: getUnreadCount,
-    refetchInterval: 30000,
   });
 }

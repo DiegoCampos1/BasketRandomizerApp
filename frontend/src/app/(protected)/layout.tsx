@@ -9,6 +9,7 @@ import { useTheme } from "@mui/material/styles";
 import Sidebar from "@/components/layout/Sidebar";
 import TopBar from "@/components/layout/TopBar";
 import { useAuthStore } from "@/stores/authStore";
+import { useNotificationSocket } from "@/hooks/notifications/useNotificationSocket";
 
 const DRAWER_WIDTH = 260;
 
@@ -28,6 +29,8 @@ export default function ProtectedLayout({
       router.replace("/login");
     }
   }, [isAuthenticated, isLoading, router]);
+
+  useNotificationSocket();
 
   if (isLoading || !isAuthenticated) return null;
 

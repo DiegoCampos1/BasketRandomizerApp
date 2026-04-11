@@ -15,6 +15,16 @@ services:
       timeout: 5s
       retries: 5
 
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   api:
     build:
       context: ./backend
@@ -28,11 +38,14 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     environment:
       DATABASE_URL: postgres://sorteador:sorteador_dev@db:5432/sorteador
       DJANGO_SECRET_KEY: dev-secret-key-change-in-production
       DEBUG: "true"
       ALLOWED_HOSTS: "*"
+      REDIS_URL: redis://redis:6379/0
 
   web:
     build:
@@ -50,6 +63,7 @@ services:
       - api
     environment:
       NEXT_PUBLIC_API_URL: http://localhost:8000/api/v1
+      NEXT_PUBLIC_WS_URL: ws://localhost:8000/ws
 
 volumes:
   pgdata:

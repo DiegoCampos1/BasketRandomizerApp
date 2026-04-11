@@ -42,6 +42,10 @@ class PlayerViewSet(OrganizationQuerySetMixin, viewsets.ModelViewSet):
             is_read=False,
         ).update(is_read=True)
 
+        from apps.notifications.services import notify_count_update
+
+        notify_count_update(organization_id=str(request.user.organization_id))
+
         return Response(PlayerSerializer(player).data)
 
 
@@ -90,6 +94,18 @@ class PublicPlayerCreateView(generics.CreateAPIView):
             for member in members
         ]
         Notification.objects.bulk_create(notifications)
+
+        from apps.notifications.services import notify_new_notification
+
+        notify_new_notification(
+            organization_id=str(organization.id),
+            notification_data={
+                "type": "player_pending",
+                "title": "Novo jogador pendente",
+                "message": f'O jogador "{player.name}" espera sua aprovação',
+                "related_player_id": str(player.id),
+            },
+        )
 
         return Response(
             {"detail": "Cadastro enviado! Aguarde a aprovação do administrador."},

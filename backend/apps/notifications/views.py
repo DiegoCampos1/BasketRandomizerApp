@@ -26,10 +26,20 @@ class NotificationViewSet(OrganizationQuerySetMixin, viewsets.ModelViewSet):
     @action(detail=False, methods=["post"], url_path="mark-all-read")
     def mark_all_read(self, request):
         self.get_queryset().filter(is_read=False).update(is_read=True)
+
+        from .services import notify_count_update
+
+        notify_count_update(organization_id=str(request.user.organization_id))
+
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     def partial_update(self, request, *args, **kwargs):
         notification = self.get_object()
         notification.is_read = True
         notification.save(update_fields=["is_read"])
+
+        from .services import notify_count_update
+
+        notify_count_update(organization_id=str(request.user.organization_id))
+
         return Response(NotificationSerializer(notification).data)
