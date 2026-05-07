@@ -68,6 +68,7 @@ export default function DraggablePlayerRow({
         <Chip
           label={heightCategoryLabels[teamPlayer.player.height_category]}
           size="small"
+          data-screenshot-hide
         />
         <Rating
           value={teamPlayer.player.quality}

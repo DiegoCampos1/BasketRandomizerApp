@@ -29,7 +29,7 @@ import {
   type DragStartEvent,
   type DragEndEvent,
 } from "@dnd-kit/core";
-import html2canvas from "html2canvas";
+import { toBlob } from "html-to-image";
 import { useTranslations, useLocale } from "next-intl";
 import { usePlayers } from "@/hooks/players/usePlayers";
 import { useDivisionMutations } from "@/hooks/divisions/useDivisionMutations";
@@ -211,18 +211,20 @@ export default function DivisionPage() {
   const handleScreenshot = async () => {
     if (!teamsGridRef.current) return;
     try {
-      const canvas = await html2canvas(teamsGridRef.current, {
+      const blob = await toBlob(teamsGridRef.current, {
         backgroundColor: "#F8FAFC",
-        scale: 2,
+        pixelRatio: 2,
+        cacheBust: true,
+        filter: (node) =>
+          !(node instanceof HTMLElement) ||
+          !node.hasAttribute("data-screenshot-hide"),
       });
-      canvas.toBlob(async (blob) => {
-        if (!blob) return;
-        await navigator.clipboard.write([
-          new ClipboardItem({ "image/png": blob }),
-        ]);
-        setCopiedType("image");
-        setTimeout(() => setCopiedType(null), 2000);
-      });
+      if (!blob) return;
+      await navigator.clipboard.write([
+        new ClipboardItem({ "image/png": blob }),
+      ]);
+      setCopiedType("image");
+      setTimeout(() => setCopiedType(null), 2000);
     } catch {
       // Clipboard API may not be available
     }

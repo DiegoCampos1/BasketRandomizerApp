@@ -51,6 +51,7 @@ export default function DroppableTeamCard({
           <Chip
             label={qualityLabel}
             size="small"
+            data-screenshot-hide
             sx={{
               backgroundColor: `${borderColor}14`,
               color: borderColor,
