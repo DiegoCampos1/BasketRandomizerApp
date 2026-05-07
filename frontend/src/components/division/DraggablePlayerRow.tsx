@@ -64,11 +64,10 @@ export default function DraggablePlayerRow({
           variant="outlined"
         />
       </Box>
-      <Box className="flex items-center gap-1">
+      <Box className="flex items-center gap-1" data-screenshot-hide>
         <Chip
           label={heightCategoryLabels[teamPlayer.player.height_category]}
           size="small"
-          data-screenshot-hide
         />
         <Rating
           value={teamPlayer.player.quality}
