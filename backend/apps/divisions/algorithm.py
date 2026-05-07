@@ -98,31 +98,29 @@ def _pre_assign_tall_centers(
     return remaining
 
 
+def _draft_sort_key(p: PlayerProfile) -> float:
+    """Sort key: best players first, with small scarcity bonus for centers / tall."""
+    scarcity = 0.0
+    if p.position == "center":
+        scarcity += 0.5
+    if p.height_category == "tall":
+        scarcity += 0.3
+    return -(p.quality + scarcity)
+
+
 def _serpentine_draft(players: list[PlayerProfile], teams: list[TeamSlot]):
     """Perform serpentine draft with cost-based team assignment."""
-
-    # Sort by quality descending, with scarcity bonus for centers and tall players
-    def sort_key(p):
-        scarcity = 0
-        if p.position == "center":
-            scarcity += 0.5
-        if p.height_category == "tall":
-            scarcity += 0.3
-        return -(p.quality + scarcity)
-
-    players_sorted = sorted(players, key=sort_key)
+    players_sorted = sorted(players, key=_draft_sort_key)
 
     num_teams = len(teams)
     forward = True
 
     for i, player in enumerate(players_sorted):
-        # Determine draft order for this round
         if forward:
             team_order = list(range(num_teams))
         else:
             team_order = list(range(num_teams - 1, -1, -1))
 
-        # Find the best team for this player based on cost
         best_team = None
         best_cost = float("inf")
 
@@ -135,9 +133,63 @@ def _serpentine_draft(players: list[PlayerProfile], teams: list[TeamSlot]):
 
         best_team.players.append(player)
 
-        # Flip direction every round
         if (i + 1) % num_teams == 0:
             forward = not forward
+
+
+def _balanced_draft_with_sizes(
+    players: list[PlayerProfile],
+    teams: list[TeamSlot],
+    target_sizes: list[int],
+):
+    """
+    Draft players to teams respecting target_sizes (hard cap per team) while
+    minimizing the placement cost (quality, position, height).
+
+    Players already present in teams (e.g. pre-assigned) count toward the cap.
+    """
+    players_sorted = sorted(players, key=_draft_sort_key)
+
+    for player in players_sorted:
+        best_team = None
+        best_cost = float("inf")
+        for idx, team in enumerate(teams):
+            if len(team.players) >= target_sizes[idx]:
+                continue
+            cost = _compute_placement_cost(team, player, teams)
+            if cost < best_cost:
+                best_cost = cost
+                best_team = team
+        # Fallback should not happen if sum(target_sizes) == total players
+        if best_team is None:
+            best_team = min(teams, key=lambda t: len(t.players))
+        best_team.players.append(player)
+
+
+def _compute_four_team_target_sizes(total: int) -> tuple[list[int], tuple[int, int, int, int]]:
+    """
+    Compute group and subteam target sizes for 4-team mode.
+
+    Returns:
+        ([group_vermelho_size, group_preto_size], (v1, v2, p1, p2))
+
+    Rule: when total >= 10, Vermelho 1 and Preto 1 are guaranteed 5 players each;
+    the remainder is split between Vermelho 2 and Preto 2 (max diff 1, V2 takes
+    the extra when odd). When total < 10, sizes are balanced naturally.
+    """
+    if total >= 10:
+        rest = total - 10
+        v2 = rest // 2 + rest % 2
+        p2 = rest // 2
+        return ([5 + v2, 5 + p2], (5, v2, 5, p2))
+
+    gv = total // 2 + total % 2
+    gp = total // 2
+    v1 = gv // 2 + gv % 2
+    v2 = gv // 2
+    p1 = gp // 2 + gp % 2
+    p2 = gp // 2
+    return ([gv, gp], (v1, v2, p1, p2))
 
 
 def divide_two_teams(players: list[PlayerProfile]) -> list[TeamSlot]:
@@ -156,21 +208,28 @@ def divide_two_teams(players: list[PlayerProfile]) -> list[TeamSlot]:
 def divide_four_teams(players: list[PlayerProfile]) -> list[TeamSlot]:
     """
     Divide players into 4 teams organized as 2 groups of 2.
-    Step 1: Divide into 2 groups (Vermelho/Preto)
-    Step 2: Subdivide each group into 2 subteams
+
+    Step 1: Divide into 2 groups (Vermelho/Preto) with target sizes.
+    Step 2: Subdivide each group into 2 subteams with target sizes.
+
+    With 10+ players, the subteams "1" of each group are guaranteed to have
+    exactly 5 players, and the remainder fills the subteams "2".
     """
-    # Step 1: Divide into 2 groups
+    n = len(players)
+    group_sizes, sub_sizes = _compute_four_team_target_sizes(n)
+    v1_size, v2_size, p1_size, p2_size = sub_sizes
+
+    # Step 1: Divide into 2 groups respecting target group sizes.
     group_vermelho = TeamSlot(name="Grupo Vermelho", group="vermelho")
     group_preto = TeamSlot(name="Grupo Preto", group="preto")
     groups = [group_vermelho, group_preto]
+    _balanced_draft_with_sizes(list(players), groups, group_sizes)
 
-    remaining = _pre_assign_tall_centers(players, groups)
-    _serpentine_draft(remaining, groups)
+    # Step 2: Subdivide each group with target subteam sizes.
+    final_teams: list[TeamSlot] = []
+    sub_targets = [(v1_size, v2_size), (p1_size, p2_size)]
 
-    # Step 2: Subdivide each group
-    final_teams = []
-
-    for group in groups:
+    for group, (sub1_size, sub2_size) in zip(groups, sub_targets):
         sub1 = TeamSlot(name=f"{group.group.capitalize()} 1", group=group.group)
         sub2 = TeamSlot(name=f"{group.group.capitalize()} 2", group=group.group)
         sub_teams = [sub1, sub2]
@@ -178,13 +237,7 @@ def divide_four_teams(players: list[PlayerProfile]) -> list[TeamSlot]:
         group_players = list(group.players)
         group.players.clear()
 
-        remaining_sub = _pre_assign_tall_centers(group_players, sub_teams)
-        _serpentine_draft(remaining_sub, sub_teams)
-
-        # Garantir que o time 1 tenha mais jogadores (ou igual) que o time 2
-        if len(sub2.players) > len(sub1.players):
-            sub1.players, sub2.players = sub2.players, sub1.players
-
+        _balanced_draft_with_sizes(group_players, sub_teams, [sub1_size, sub2_size])
         final_teams.extend(sub_teams)
 
     return final_teams

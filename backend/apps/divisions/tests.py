@@ -135,6 +135,96 @@ class DivisionServiceFourTeamsApprovalTest(TestCase):
         self.assertEqual(total_players, 8)
 
 
+class FourTeamSubteam1SizeTest(TestCase):
+    """
+    With 10+ players in 4-team mode, Vermelho 1 and Preto 1 must have exactly
+    5 players each, and the remainder fills Vermelho 2 / Preto 2.
+    """
+
+    def setUp(self):
+        self.org = Organization.objects.create(name="Org Subteam1")
+        self.user = User.objects.create_user(
+            username="subteam1",
+            email="subteam1@test.com",
+            password="Test@1234",
+            organization=self.org,
+        )
+
+    def _make_players(self, n):
+        positions = ["guard", "forward", "center"]
+        return [
+            Player.objects.create(
+                name=f"P{i}",
+                quality=(i % 5) + 1,
+                position=positions[i % 3],
+                height_cm=170 + (i % 25),
+                organization=self.org,
+                is_approved=True,
+            )
+            for i in range(n)
+        ]
+
+    def _subteam_sizes(self, division):
+        sizes = {}
+        for team in division.teams.all():
+            sizes[team.name] = team.team_players.count()
+        return sizes
+
+    def _assert_v1_p1_have_five(self, total):
+        players = self._make_players(total)
+        division = create_division(self.user, [p.id for p in players], "4_teams", "2026-05-07")
+        sizes = self._subteam_sizes(division)
+        self.assertEqual(sizes.get("Vermelho 1"), 5, f"V1 should have 5 with {total} players")
+        self.assertEqual(sizes.get("Preto 1"), 5, f"P1 should have 5 with {total} players")
+        self.assertEqual(
+            sum(sizes.values()),
+            total,
+            f"Total should equal {total}",
+        )
+
+    def test_ten_players_v1_p1_have_five(self):
+        self._assert_v1_p1_have_five(10)
+
+    def test_eleven_players_v1_p1_have_five(self):
+        self._assert_v1_p1_have_five(11)
+
+    def test_twelve_players_v1_p1_have_five(self):
+        self._assert_v1_p1_have_five(12)
+
+    def test_fifteen_players_v1_p1_have_five(self):
+        self._assert_v1_p1_have_five(15)
+
+    def test_nineteen_players_v1_p1_have_five(self):
+        self._assert_v1_p1_have_five(19)
+
+    def test_twenty_players_all_subteams_have_five(self):
+        players = self._make_players(20)
+        division = create_division(self.user, [p.id for p in players], "4_teams", "2026-05-07")
+        sizes = self._subteam_sizes(division)
+        self.assertEqual(sizes.get("Vermelho 1"), 5)
+        self.assertEqual(sizes.get("Vermelho 2"), 5)
+        self.assertEqual(sizes.get("Preto 1"), 5)
+        self.assertEqual(sizes.get("Preto 2"), 5)
+
+    def test_eight_players_balanced_naturally(self):
+        """With < 10 players, sizes are balanced naturally (no V1/P1=5 rule)."""
+        players = self._make_players(8)
+        division = create_division(self.user, [p.id for p in players], "4_teams", "2026-05-07")
+        sizes = self._subteam_sizes(division)
+        self.assertEqual(sum(sizes.values()), 8)
+        # Each subteam should have 2 players (8 / 4)
+        for size in sizes.values():
+            self.assertEqual(size, 2)
+
+    def test_nine_players_max_size_diff_one(self):
+        """With 9 players, sizes should be split with max diff of 1."""
+        players = self._make_players(9)
+        division = create_division(self.user, [p.id for p in players], "4_teams", "2026-05-07")
+        sizes = self._subteam_sizes(division)
+        self.assertEqual(sum(sizes.values()), 9)
+        self.assertLessEqual(max(sizes.values()) - min(sizes.values()), 1)
+
+
 class MovePlayerTest(TestCase):
     """Tests for the move_player service."""
 

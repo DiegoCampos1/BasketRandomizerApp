@@ -13,6 +13,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import { useTranslations, useLocale } from "next-intl";
 import { useDivision } from "@/hooks/divisions/useDivisions";
 import { usePlayerLabels } from "@/hooks/usePlayerLabels";
+import { getTeamColor } from "@/lib/teamColors";
 import { Team } from "@/types/division";
 
 export default function DivisionDetailPage() {
@@ -90,13 +91,13 @@ function DetailTeamCard({
   heightCategoryLabels: Record<string, string>;
   t: (key: string, values?: Record<string, string | number>) => string;
 }) {
-  const isVermelho = team.name.toLowerCase().includes("vermelho");
+  const borderColor = getTeamColor(team);
 
   return (
     <Card
       sx={{
         borderTop: 4,
-        borderColor: isVermelho ? "primary.main" : "secondary.main",
+        borderColor,
       }}
     >
       <CardContent>
@@ -106,8 +107,12 @@ function DetailTeamCard({
           </Typography>
           <Chip
             label={t("detail.quality", { value: team.total_quality })}
-            color={isVermelho ? "error" : "primary"}
             size="small"
+            sx={{
+              backgroundColor: `${borderColor}14`,
+              color: borderColor,
+              fontWeight: 600,
+            }}
           />
         </Box>
 

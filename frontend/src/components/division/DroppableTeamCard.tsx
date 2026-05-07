@@ -7,13 +7,11 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Chip from "@mui/material/Chip";
 import { Team } from "@/types/division";
+import { getTeamColor } from "@/lib/teamColors";
 import DraggablePlayerRow from "./DraggablePlayerRow";
-
-const TEAM_COLORS = ["#4F46E5", "#F97316", "#10B981", "#EF4444"];
 
 interface DroppableTeamCardProps {
   team: Team;
-  index: number;
   positionLabels: Record<string, string>;
   heightCategoryLabels: Record<string, string>;
   qualityLabel: string;
@@ -22,7 +20,6 @@ interface DroppableTeamCardProps {
 
 export default function DroppableTeamCard({
   team,
-  index,
   positionLabels,
   heightCategoryLabels,
   qualityLabel,
@@ -32,7 +29,7 @@ export default function DroppableTeamCard({
     id: team.id,
   });
 
-  const borderColor = TEAM_COLORS[index % TEAM_COLORS.length];
+  const borderColor = getTeamColor(team);
 
   return (
     <Card

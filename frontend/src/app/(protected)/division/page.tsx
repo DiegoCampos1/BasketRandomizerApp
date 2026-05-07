@@ -339,11 +339,10 @@ export default function DivisionPage() {
             ref={teamsGridRef}
             className="grid grid-cols-1 gap-4 md:grid-cols-2"
           >
-            {division.teams.map((team, index) => (
+            {division.teams.map((team) => (
               <DroppableTeamCard
                 key={team.id}
                 team={team}
-                index={index}
                 positionLabels={positionLabels}
                 heightCategoryLabels={heightCategoryLabels}
                 qualityLabel={t("team.quality", {
