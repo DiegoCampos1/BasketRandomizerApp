@@ -20,7 +20,7 @@
   "dividing": "Dividindo...",
   "team": {
     "quality": "Qualidade: {value}",
-    "playerCount": "{count} jogadores"
+    "playerCount": "{count, plural, one {# jogador} other {# jogadores}}"
   },
   "errors": {
     "maxPlayers": "Máximo de {max} jogadores por divisão.",
@@ -39,6 +39,6 @@
     "imageCopied": "Imagem copiada!",
     "textCopied": "Texto copiado!",
     "textHeader": "Times - {date}",
-    "playerCount": "{count} jogadores"
+    "playerCount": "{count, plural, one {# jogador} other {# jogadores}}"
   }
 }

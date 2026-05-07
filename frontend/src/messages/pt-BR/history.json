@@ -4,7 +4,7 @@
   "createdBy": "Criado por {name}",
   "twoTeams": "2 Times",
   "fourTeams": "4 Times",
-  "playerCount": "{count} jogadores",
+  "playerCount": "{count, plural, one {# jogador} other {# jogadores}}",
   "detail": {
     "back": "Voltar",
     "title": "Divisão {date}",

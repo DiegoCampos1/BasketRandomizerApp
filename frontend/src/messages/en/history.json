@@ -4,7 +4,7 @@
   "createdBy": "Created by {name}",
   "twoTeams": "2 Teams",
   "fourTeams": "4 Teams",
-  "playerCount": "{count} players",
+  "playerCount": "{count, plural, one {# player} other {# players}}",
   "detail": {
     "back": "Back",
     "title": "Division {date}",

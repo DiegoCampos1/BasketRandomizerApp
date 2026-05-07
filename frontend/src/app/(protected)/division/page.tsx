@@ -35,6 +35,7 @@ import { usePlayers } from "@/hooks/players/usePlayers";
 import { useDivisionMutations } from "@/hooks/divisions/useDivisionMutations";
 import { usePlayerLabels } from "@/hooks/usePlayerLabels";
 import { Division, DivisionMode, TeamPlayer } from "@/types/division";
+import { getTeamEmoji } from "@/lib/teamColors";
 import DroppableTeamCard from "@/components/division/DroppableTeamCard";
 import PlayerRowOverlay from "@/components/division/PlayerRowOverlay";
 
@@ -246,7 +247,7 @@ export default function DivisionPage() {
         const count = t("share.playerCount", {
           count: team.team_players.length,
         });
-        return `\n⬛ ${team.name} (${count})\n${playerLines}`;
+        return `\n${getTeamEmoji(team)} ${team.name} (${count})\n${playerLines}`;
       })
       .join("\n");
 
