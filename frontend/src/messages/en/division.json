@@ -9,6 +9,11 @@
   "presentPlayers": "Present players ({selected}/{max} selected)",
   "selectAll": "Select all",
   "clear": "Clear",
+  "search": {
+    "placeholder": "Search player by name...",
+    "clear": "Clear search",
+    "noResults": "No players found for \"{query}\""
+  },
   "divideButton": "Divide Teams",
   "tips": {
     "title": "How does the division work?",

@@ -36,8 +36,10 @@ import { useDivisionMutations } from "@/hooks/divisions/useDivisionMutations";
 import { usePlayerLabels } from "@/hooks/usePlayerLabels";
 import { Division, DivisionMode, TeamPlayer } from "@/types/division";
 import { getTeamEmoji } from "@/lib/teamColors";
+import { matchesQuery } from "@/lib/text";
 import DroppableTeamCard from "@/components/division/DroppableTeamCard";
 import PlayerRowOverlay from "@/components/division/PlayerRowOverlay";
+import SearchField from "@/components/ui/SearchField";
 
 const MAX_PLAYERS = 20;
 
@@ -84,6 +86,7 @@ export default function DivisionPage() {
   const players = allPlayers.filter((p) => p.active && p.is_approved);
   const { createDivision, movePlayer } = useDivisionMutations();
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [search, setSearch] = useState("");
   const [mode, setMode] = useState<DivisionMode>("2_teams");
   const [division, setDivision] = useState<Division | null>(null);
   const [error, setError] = useState("");
@@ -116,13 +119,20 @@ export default function DivisionPage() {
     });
   };
 
+  const visiblePlayers = players.filter((p) => matchesQuery(p.name, search));
+
   const selectAll = () => {
-    const ids = players.map((p) => p.id).slice(0, MAX_PLAYERS);
-    setSelectedIds(new Set(ids));
-    if (players.length > MAX_PLAYERS) {
-      setError(t("errors.maxSelected", { max: MAX_PLAYERS }));
-    } else {
+    const next = new Set(selectedIds);
+    for (const player of visiblePlayers) {
+      if (next.size >= MAX_PLAYERS) break;
+      next.add(player.id);
+    }
+    setSelectedIds(next);
+    const allVisibleSelected = visiblePlayers.every((p) => next.has(p.id));
+    if (allVisibleSelected) {
       setError("");
+    } else {
+      setError(t("errors.maxSelected", { max: MAX_PLAYERS }));
     }
   };
 
@@ -455,8 +465,27 @@ export default function DivisionPage() {
           </Box>
         </Box>
 
+        <Box className="mb-3 w-full sm:max-w-sm">
+          <SearchField
+            value={search}
+            onChange={setSearch}
+            placeholder={t("search.placeholder")}
+            clearLabel={t("search.clear")}
+          />
+        </Box>
+
+        {visiblePlayers.length === 0 && search.trim() !== "" && (
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            className="py-6 text-center"
+          >
+            {t("search.noResults", { query: search.trim() })}
+          </Typography>
+        )}
+
         <Box className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
-          {players.map((player) => (
+          {visiblePlayers.map((player) => (
             <Card
               key={player.id}
               sx={{

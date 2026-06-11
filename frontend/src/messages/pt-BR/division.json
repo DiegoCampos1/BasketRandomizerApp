@@ -9,6 +9,11 @@
   "presentPlayers": "Jogadores presentes ({selected}/{max} selecionados)",
   "selectAll": "Selecionar todos",
   "clear": "Limpar",
+  "search": {
+    "placeholder": "Buscar jogador pelo nome...",
+    "clear": "Limpar busca",
+    "noResults": "Nenhum jogador encontrado para \"{query}\""
+  },
   "divideButton": "Dividir Times",
   "tips": {
     "title": "Como funciona a divisão?",

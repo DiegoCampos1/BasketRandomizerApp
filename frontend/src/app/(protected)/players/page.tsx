@@ -31,6 +31,8 @@ import { usePlayerMutations } from "@/hooks/players/usePlayerMutations";
 import { useAuthStore } from "@/stores/authStore";
 import { usePlayerLabels } from "@/hooks/usePlayerLabels";
 import { Player, Position } from "@/types/player";
+import { matchesQuery } from "@/lib/text";
+import SearchField from "@/components/ui/SearchField";
 
 const POSITIONS: Position[] = ["guard", "forward", "center"];
 
@@ -46,6 +48,7 @@ export default function PlayersPage() {
   const [showTips, setShowTips] = useState(true);
   const [editingPlayer, setEditingPlayer] = useState<Player | null>(null);
   const [copied, setCopied] = useState(false);
+  const [search, setSearch] = useState("");
   const [form, setForm] = useState({
     name: "",
     height_cm: "",
@@ -55,6 +58,17 @@ export default function PlayersPage() {
 
   const pendingPlayers = players.filter((p) => !p.is_approved);
   const approvedPlayers = players.filter((p) => p.is_approved);
+  const visiblePending = pendingPlayers.filter((p) =>
+    matchesQuery(p.name, search)
+  );
+  const visibleApproved = approvedPlayers.filter((p) =>
+    matchesQuery(p.name, search)
+  );
+  const noSearchResults =
+    search.trim() !== "" &&
+    visiblePending.length === 0 &&
+    visibleApproved.length === 0 &&
+    players.length > 0;
 
   const orgSlug = user?.organization?.slug;
   const shareUrl =
@@ -197,21 +211,43 @@ export default function PlayersPage() {
         </Alert>
       )}
 
+      {/* Search */}
+      {players.length > 0 && (
+        <Box className="mb-4 w-full sm:max-w-sm">
+          <SearchField
+            value={search}
+            onChange={setSearch}
+            placeholder={t("search.placeholder")}
+            clearLabel={t("search.clear")}
+          />
+        </Box>
+      )}
+
+      {noSearchResults && (
+        <Card className="mb-6">
+          <CardContent className="py-10 text-center">
+            <Typography variant="body1" color="text.secondary">
+              {t("search.noResults", { query: search.trim() })}
+            </Typography>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Pending approval section */}
-      {pendingPlayers.length > 0 && (
+      {visiblePending.length > 0 && (
         <Box className="mb-6">
           <Box className="mb-3 flex items-center gap-2">
             <Typography variant="h6" className="font-bold">
               {t("pending.title")}
             </Typography>
             <Chip
-              label={pendingPlayers.length}
+              label={visiblePending.length}
               size="small"
               color="warning"
             />
           </Box>
           <Box className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {pendingPlayers.map((player) => (
+            {visiblePending.map((player) => (
               <Card
                 key={player.id}
                 sx={{
@@ -299,15 +335,15 @@ export default function PlayersPage() {
           </CardContent>
         </Card>
       ) : (
-        approvedPlayers.length > 0 && (
+        visibleApproved.length > 0 && (
           <Box>
-            {pendingPlayers.length > 0 && (
+            {visiblePending.length > 0 && (
               <Typography variant="h6" className="mb-3 font-bold">
                 {t("approved.title")}
               </Typography>
             )}
             <Box className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {approvedPlayers.map((player) => (
+              {visibleApproved.map((player) => (
                 <Card
                   key={player.id}
                   sx={{

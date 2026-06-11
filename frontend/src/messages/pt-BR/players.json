@@ -5,6 +5,11 @@
   "copied": "Copiado!",
   "copyTooltip": "Copiar link de cadastro",
   "addPlayer": "Adicionar Jogador",
+  "search": {
+    "placeholder": "Buscar jogador pelo nome...",
+    "clear": "Limpar busca",
+    "noResults": "Nenhum jogador encontrado para \"{query}\""
+  },
   "tips": {
     "title": "Dicas para um bom cadastro",
     "quality": "avalie em relação aos jogadores da sua organização, não a profissionais. O melhor jogador de cada posição deve receber 5 estrelas e os demais devem ser avaliados em comparação a ele.",

@@ -5,6 +5,11 @@
   "copied": "Copied!",
   "copyTooltip": "Copy registration link",
   "addPlayer": "Add Player",
+  "search": {
+    "placeholder": "Search player by name...",
+    "clear": "Clear search",
+    "noResults": "No players found for \"{query}\""
+  },
   "tips": {
     "title": "Tips for good registration",
     "quality": "rate players relative to your organization, not professionals. The best player at each position should get 5 stars, and others should be rated in comparison.",
