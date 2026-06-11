@@ -1,9 +1,8 @@
 import { Notification, UnreadCount } from "@/types/notification";
-import apiClient from "./client";
+import apiClient, { getAllPages } from "./client";
 
 export async function getNotifications(): Promise<Notification[]> {
-  const response = await apiClient.get("/notifications/");
-  return response.data.results || response.data;
+  return getAllPages<Notification>("/notifications/");
 }
 
 export async function getUnreadCount(): Promise<UnreadCount> {

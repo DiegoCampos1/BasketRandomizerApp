@@ -1,12 +1,11 @@
 import { CreatePlayerInput, Player, PublicCreatePlayerInput, UpdatePlayerInput } from "@/types/player";
-import apiClient from "./client";
+import apiClient, { getAllPages } from "./client";
 import axios from "axios";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
 
 export async function getPlayers(): Promise<Player[]> {
-  const response = await apiClient.get("/players/");
-  return response.data.results || response.data;
+  return getAllPages<Player>("/players/");
 }
 
 export async function getPlayer(id: string): Promise<Player> {

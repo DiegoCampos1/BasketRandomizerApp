@@ -5,11 +5,10 @@ import {
   MovePlayerInput,
   SwapPlayersInput,
 } from "@/types/division";
-import apiClient from "./client";
+import apiClient, { getAllPages } from "./client";
 
 export async function getDivisions(): Promise<DivisionListItem[]> {
-  const response = await apiClient.get("/divisions/");
-  return response.data.results || response.data;
+  return getAllPages<DivisionListItem>("/divisions/");
 }
 
 export async function getDivision(id: string): Promise<Division> {

@@ -85,4 +85,27 @@ apiClient.interceptors.response.use(
   }
 );
 
+interface PaginatedResponse<T> {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: T[];
+}
+
+// Follows DRF page-number pagination until `next` is null, accumulating all results.
+export async function getAllPages<T>(url: string): Promise<T[]> {
+  const items: T[] = [];
+  let page = 1;
+  for (;;) {
+    const response = await apiClient.get<PaginatedResponse<T> | T[]>(url, {
+      params: { page, page_size: 100 },
+    });
+    const data = response.data;
+    if (Array.isArray(data)) return data;
+    items.push(...data.results);
+    if (!data.next) return items;
+    page += 1;
+  }
+}
+
 export default apiClient;
