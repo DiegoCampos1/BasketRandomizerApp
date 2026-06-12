@@ -1,10 +1,12 @@
+import random
+
 from django.test import TestCase
 from rest_framework.test import APIClient
 
 from apps.accounts.models import Organization, User
 from apps.players.models import Player
 
-from .algorithm import PlayerProfile, TeamSlot, _balance_matchup_quality
+from .algorithm import PlayerProfile, TeamSlot, _balance_matchup_quality, divide_teams
 from .models import Team, TeamPlayer
 from .services import create_division, move_player
 
@@ -570,6 +572,63 @@ class MatchupQualityBalanceTest(TestCase):
         }
         self.assertLessEqual(abs(qualities["Vermelho 1"] - qualities["Preto 1"]), 3)
         self.assertLessEqual(abs(qualities["Vermelho 2"] - qualities["Preto 2"]), 3)
+
+
+class DivisionVarietyTest(TestCase):
+    """The optional rng varies tie-breaks while keeping every balance invariant."""
+
+    @staticmethod
+    def _profile(player_id, quality, position, category="medium", height_cm=180.0):
+        return PlayerProfile(player_id, quality, position, category, height_cm)
+
+    def _fifteen_with_four_centers(self):
+        profiles = [
+            self._profile(f"c{i}", q, "center", "tall", 190.0 + i)
+            for i, q in enumerate([5, 5, 5, 3])
+        ]
+        profiles += [
+            self._profile(f"g{i}", q, "guard", "small", 175.0) for i, q in enumerate([5, 5, 2, 1])
+        ]
+        profiles += [
+            self._profile(f"f{i}", q, "forward", "medium", 183.0)
+            for i, q in enumerate([4, 4, 3, 3, 2, 2, 1])
+        ]
+        return profiles
+
+    def test_seeded_rng_preserves_invariants(self):
+        profiles = self._fifteen_with_four_centers()
+        for seed in range(10):
+            teams = divide_teams(profiles, "4_teams", rng=random.Random(seed))
+            by_name = {t.name: t for t in teams}
+            self.assertEqual(len(by_name["Vermelho 1"].players), 5, f"seed {seed}")
+            self.assertEqual(len(by_name["Vermelho 2"].players), 3, f"seed {seed}")
+            self.assertEqual(len(by_name["Preto 1"].players), 5, f"seed {seed}")
+            self.assertEqual(len(by_name["Preto 2"].players), 2, f"seed {seed}")
+            for name, team in by_name.items():
+                centers = sum(1 for p in team.players if p.position == "center")
+                self.assertEqual(centers, 1, f"seed {seed}: {name} center count")
+            gap = abs(by_name["Vermelho 1"].total_quality - by_name["Preto 1"].total_quality) + abs(
+                by_name["Vermelho 2"].total_quality - by_name["Preto 2"].total_quality
+            )
+            self.assertLessEqual(gap, 4, f"seed {seed}: matchup gap too large")
+
+    def test_different_seeds_produce_variation(self):
+        profiles = [self._profile(f"p{i}", 3, "guard") for i in range(8)]
+        partitions = set()
+        for seed in range(10):
+            teams = divide_teams(profiles, "2_teams", rng=random.Random(seed))
+            partitions.add(frozenset(frozenset(p.player_id for p in t.players) for t in teams))
+        self.assertGreater(len(partitions), 1)
+
+    def test_default_is_deterministic(self):
+        profiles = self._fifteen_with_four_centers()
+        first = divide_teams(profiles, "4_teams")
+        second = divide_teams(profiles, "4_teams")
+        for team_a, team_b in zip(first, second):
+            self.assertEqual(
+                [p.player_id for p in team_a.players],
+                [p.player_id for p in team_b.players],
+            )
 
 
 class MovePlayerTest(TestCase):

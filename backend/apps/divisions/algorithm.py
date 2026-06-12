@@ -11,6 +11,7 @@ entre os lados em cada nível da divisão. Armadores e alas seguem apenas o
 balanceamento por custo.
 """
 
+import random
 from dataclasses import dataclass, field
 
 WEIGHT_QUALITY = 3.0
@@ -324,17 +325,29 @@ def divide_four_teams(players: list[PlayerProfile]) -> list[TeamSlot]:
     return final_teams
 
 
-def divide_teams(players: list[PlayerProfile], mode: str) -> list[TeamSlot]:
+def divide_teams(
+    players: list[PlayerProfile],
+    mode: str,
+    rng: random.Random | None = None,
+) -> list[TeamSlot]:
     """
     Main entry point for team division.
 
     Args:
         players: List of PlayerProfile objects
         mode: "2_teams" or "4_teams"
+        rng: Optional random generator. When given, players are shuffled so
+            ties between equivalent players vary between runs; all balance
+            guarantees are preserved (sorts are stable, placement logic is
+            unchanged).
 
     Returns:
         List of TeamSlot objects with assigned players
     """
+    players = list(players)
+    if rng is not None:
+        rng.shuffle(players)
+
     if len(players) > 20:
         raise ValueError("Máximo de 20 jogadores por divisão.")
 

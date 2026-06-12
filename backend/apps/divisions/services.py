@@ -1,3 +1,5 @@
+import random
+
 from django.db import transaction
 from django.db.models import Max
 
@@ -42,8 +44,8 @@ def create_division(user, player_ids, mode, date):
         for p in players
     ]
 
-    # Run algorithm
-    team_slots = divide_teams(profiles, mode)
+    # Run algorithm with variety between runs (ties shuffled, balance kept)
+    team_slots = divide_teams(profiles, mode, rng=random.Random())
 
     # Persist in database
     with transaction.atomic():
