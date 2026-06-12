@@ -4,7 +4,7 @@ import { Link } from "expo-router";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { KeyboardAvoidingView, Platform, ScrollView, View } from "react-native";
+import { ScrollView, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { z } from "zod";
 
@@ -53,14 +53,13 @@ export default function LoginScreen() {
         colors={["rgba(255,107,44,0.12)", "transparent"]}
         style={{ position: "absolute", top: 0, left: 0, right: 0, height: 320 }}
       />
-      <KeyboardAvoidingView
+      <ScrollView
         style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}
+        keyboardShouldPersistTaps="handled"
+        automaticallyAdjustKeyboardInsets
+        keyboardDismissMode="none"
       >
-        <ScrollView
-          contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}
-          keyboardShouldPersistTaps="handled"
-        >
           <View style={{ gap: spacing["2xl"] }}>
             <Animated.View entering={FadeInDown.duration(320)}>
               <AppText variant="displayXl">{"Sorteador\nde Times"}</AppText>
@@ -149,17 +148,16 @@ export default function LoginScreen() {
               </View>
             </Animated.View>
           </View>
-        </ScrollView>
-        {__DEV__ && (
-          <AppText
-            variant="caption"
-            tone="tertiary"
-            style={{ textAlign: "center", paddingBottom: spacing.sm }}
-          >
-            API: {API_URL}
-          </AppText>
-        )}
-      </KeyboardAvoidingView>
+      </ScrollView>
+      {__DEV__ && (
+        <AppText
+          variant="caption"
+          tone="tertiary"
+          style={{ textAlign: "center", paddingBottom: spacing.sm }}
+        >
+          API: {API_URL}
+        </AppText>
+      )}
     </Screen>
   );
 }

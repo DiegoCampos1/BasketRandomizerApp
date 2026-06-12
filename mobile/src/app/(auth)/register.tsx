@@ -3,7 +3,7 @@ import { Link } from "expo-router";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { KeyboardAvoidingView, Platform, ScrollView, View } from "react-native";
+import { ScrollView, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { z } from "zod";
 
@@ -79,14 +79,17 @@ export default function RegisterScreen() {
 
   return (
     <Screen>
-      <KeyboardAvoidingView
+      <ScrollView
         style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        contentContainerStyle={{
+          flexGrow: 1,
+          justifyContent: "center",
+          paddingVertical: spacing["3xl"],
+        }}
+        keyboardShouldPersistTaps="handled"
+        automaticallyAdjustKeyboardInsets
+        keyboardDismissMode="none"
       >
-        <ScrollView
-          contentContainerStyle={{ flexGrow: 1, justifyContent: "center", paddingVertical: spacing["3xl"] }}
-          keyboardShouldPersistTaps="handled"
-        >
           <View style={{ gap: spacing["2xl"] }}>
             <Animated.View entering={FadeInDown.duration(320)}>
               <AppText variant="display">{t("register.title")}</AppText>
@@ -203,8 +206,7 @@ export default function RegisterScreen() {
               </View>
             </Animated.View>
           </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
+      </ScrollView>
     </Screen>
   );
 }

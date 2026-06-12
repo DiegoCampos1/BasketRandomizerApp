@@ -31,16 +31,10 @@ const TextField = forwardRef<TextInput, TextFieldProps>(function TextField(
         style={{
           backgroundColor: colors.bg.raised,
           borderRadius: radius.input,
-          borderWidth: 1,
+          // Border color is the only focus affordance: toggling shadows here
+          // can reparent the native TextInput (view flattening) and blur it.
+          borderWidth: 1.5,
           borderColor,
-          ...(focused && !error
-            ? {
-                shadowColor: colors.brand.glow,
-                shadowOpacity: 1,
-                shadowRadius: 12,
-                shadowOffset: { width: 0, height: 0 },
-              }
-            : null),
         }}
       >
         <TextInput

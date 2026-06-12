@@ -4,7 +4,7 @@ React Native (Expo) app for the team divider, consuming the same Django REST API
 
 ## Stack
 
-Expo (Expo Go compatible) · expo-router · TypeScript strict · TanStack Query · Zustand · NativeWind v4 (Tailwind 3.4) · Reanimated + Gesture Handler · i18next (+ICU) with pt-BR/en · expo-secure-store (tokens)
+Expo (Expo Go compatible) · expo-router · TypeScript strict · TanStack Query · Zustand · token-driven StyleSheet design system · Reanimated + Gesture Handler · i18next (+ICU) with pt-BR/en · expo-secure-store (tokens)
 
 ## Running locally
 

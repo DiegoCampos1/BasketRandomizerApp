@@ -96,7 +96,7 @@ A native iOS/Android client in [`mobile/`](mobile/) with full feature parity wit
 | **TanStack Query** | One server-state layer across web and mobile with identical query keys and invalidation rules — and built-in optimistic updates with rollback for the drag-and-drop move. |
 | **Zustand** | Tiny auth/session store; no boilerplate for a store that holds one user. |
 | **Reanimated + Gesture Handler** | All motion runs on the UI thread at 60fps. Powers the signature **team reveal** (staggered cards + haptics + count-up totals) and a **custom drag-and-drop engine** (~250 lines: long-press lift, drop-zone hit-testing corrected by scroll offset, edge auto-scroll) — no RN library handles container-to-container DnD inside a ScrollView, so it was built from scratch, with a tap-to-move bottom sheet as the accessible fallback. |
-| **NativeWind (Tailwind)** | Same styling vocabulary as the web app, backed by a single design-tokens module so no component hardcodes a color. |
+| **Token-driven StyleSheet design system** | A single design-tokens module (colors, type scale, spacing, motion springs) feeds every component — no styling library between the tokens and the native views, and no component hardcodes a color. |
 | **expo-secure-store** | Refresh tokens live in the iOS Keychain / Android Keystore — never in plain storage; access tokens stay in memory only. |
 | **i18next + ICU** | Reuses the web app's pt-BR/en message catalogs **byte-for-byte** (they use ICU plurals), so shared texts are identical across platforms. |
 | **react-native-view-shot + expo-sharing** | Share the division as a PNG straight to WhatsApp, mirroring the web's image export. |

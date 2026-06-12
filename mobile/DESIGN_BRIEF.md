@@ -4,13 +4,13 @@ The source of truth for every visual and interaction decision in this app. When 
 
 **Identity in one line:** pre-game locker room — near-black surfaces, hot basketball orange, condensed uppercase type, scoreboard numerals, tactile motion. Every screen should feel like game day.
 
-**Stack contract:** Expo (Expo Go compatible), NativeWind v4 backed by `src/theme/tokens.ts`, `react-native-reanimated` for ALL motion, `react-native-gesture-handler`, `expo-haptics`, `@gorhom/bottom-sheet`, `expo-linear-gradient`. No other UI/animation libraries.
+**Stack contract:** Expo (Expo Go compatible), a token-driven StyleSheet system backed by `src/theme/tokens.ts` (no styling library), `react-native-reanimated` for ALL motion, `react-native-gesture-handler`, `expo-haptics`, `@gorhom/bottom-sheet`, `expo-linear-gradient`. No other UI/animation libraries.
 
 ---
 
 ## 1. Tokens (`src/theme/tokens.ts`)
 
-Components **never hardcode hex values** — import from tokens (or use the mirrored Tailwind classes from `tailwind.config.js`).
+Components **never hardcode hex values** — always import from `src/theme/tokens.ts`.
 
 ### Background layers
 

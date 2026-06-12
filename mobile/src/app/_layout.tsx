@@ -22,8 +22,6 @@ import { initI18n } from "@/i18n";
 import { useAuthStore } from "@/stores/authStore";
 import { colors } from "@/theme/tokens";
 
-import "../global.css";
-
 SplashScreen.preventAutoHideAsync();
 
 const queryClient = new QueryClient({
