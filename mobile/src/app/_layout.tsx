@@ -18,6 +18,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { initI18n } from "@/i18n";
+import { useAuthStore } from "@/stores/authStore";
 import { colors } from "@/theme/tokens";
 
 import "../global.css";
@@ -40,12 +41,16 @@ export default function RootLayout() {
     BarlowCondensed_700Bold,
   });
   const [i18nReady, setI18nReady] = useState(false);
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const isAuthLoading = useAuthStore((s) => s.isLoading);
+  const hydrate = useAuthStore((s) => s.hydrate);
 
   useEffect(() => {
     initI18n().finally(() => setI18nReady(true));
-  }, []);
+    hydrate();
+  }, [hydrate]);
 
-  const ready = fontsLoaded && i18nReady;
+  const ready = fontsLoaded && i18nReady && !isAuthLoading;
 
   useEffect(() => {
     if (ready) {
@@ -66,8 +71,12 @@ export default function RootLayout() {
               contentStyle: { backgroundColor: colors.bg.base },
             }}
           >
-            <Stack.Screen name="(tabs)" />
-            <Stack.Screen name="(auth)" />
+            <Stack.Protected guard={isAuthenticated}>
+              <Stack.Screen name="(tabs)" />
+            </Stack.Protected>
+            <Stack.Protected guard={!isAuthenticated}>
+              <Stack.Screen name="(auth)" />
+            </Stack.Protected>
           </Stack>
         </QueryClientProvider>
       </SafeAreaProvider>
