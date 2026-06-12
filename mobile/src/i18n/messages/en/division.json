@@ -50,5 +50,11 @@
   "move": {
     "title": "Move {name} to...",
     "toTeam": "Move to {team}"
+  },
+  "teamNames": {
+    "red": "Red Team",
+    "black": "Black Team",
+    "redNumbered": "Red {number}",
+    "blackNumbered": "Black {number}"
   }
 }

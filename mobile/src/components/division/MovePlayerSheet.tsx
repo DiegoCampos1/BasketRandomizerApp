@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next";
 import { Pressable, View } from "react-native";
 
 import AppText from "@/components/ui/AppText";
+import { translateTeamName } from "@/lib/teamNames";
 import { getTeamIdentity } from "@/theme/teamColors";
 import { colors, radius, spacing } from "@/theme/tokens";
 import type { Team, TeamPlayer } from "@/types/division";
@@ -60,11 +61,12 @@ const MovePlayerSheet = forwardRef<BottomSheetModal, MovePlayerSheetProps>(
           </AppText>
           {targets.map((team) => {
             const identity = getTeamIdentity(team);
+            const displayName = translateTeamName(team.name, t);
             return (
               <Pressable
                 key={team.id}
                 accessibilityRole="button"
-                accessibilityLabel={t("move.toTeam", { team: team.name })}
+                accessibilityLabel={t("move.toTeam", { team: displayName })}
                 onPress={() => {
                   if (teamPlayer && sourceTeamId) {
                     Haptics.selectionAsync();
@@ -92,7 +94,7 @@ const MovePlayerSheet = forwardRef<BottomSheetModal, MovePlayerSheetProps>(
                   }}
                 />
                 <AppText variant="headline" color={identity.accent} style={{ flex: 1 }}>
-                  {team.name}
+                  {displayName}
                 </AppText>
                 <AppText variant="caption" tone="secondary">
                   {t("team.playerCount", { count: team.player_count })}

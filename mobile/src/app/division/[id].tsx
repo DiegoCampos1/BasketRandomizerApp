@@ -25,6 +25,7 @@ import { useDivisionMutations } from "@/hooks/divisions/useDivisionMutations";
 import { usePlayerLabels } from "@/hooks/usePlayerLabels";
 import { currentLocale } from "@/i18n";
 import { shareDivisionText, shareViewAsImage } from "@/lib/share";
+import { translateTeamName } from "@/lib/teamNames";
 import { getTeamIdentity } from "@/theme/teamColors";
 import { colors, spacing } from "@/theme/tokens";
 import type { Team, TeamPlayer } from "@/types/division";
@@ -36,10 +37,12 @@ function ScoreboardPair({
   left,
   right,
   delay,
+  translateName,
 }: {
   left: Team;
   right: Team;
   delay: number;
+  translateName: (name: string) => string;
 }) {
   const leftIdentity = getTeamIdentity(left);
   const rightIdentity = getTeamIdentity(right);
@@ -55,7 +58,7 @@ function ScoreboardPair({
     >
       <View style={{ flex: 1, alignItems: "flex-end", gap: 2 }}>
         <AppText variant="title2" color={leftIdentity.accent} numberOfLines={1}>
-          {left.name}
+          {translateName(left.name)}
         </AppText>
         <CountUpText value={left.total_quality} delay={delay} />
       </View>
@@ -64,7 +67,7 @@ function ScoreboardPair({
       </AppText>
       <View style={{ flex: 1, alignItems: "flex-start", gap: 2 }}>
         <AppText variant="title2" color={rightIdentity.accent} numberOfLines={1}>
-          {right.name}
+          {translateName(right.name)}
         </AppText>
         <CountUpText value={right.total_quality} delay={delay} />
       </View>
@@ -267,6 +270,7 @@ export default function DivisionResultScreen() {
                     left={left}
                     right={right}
                     delay={REVEAL_BASE_DELAY + index * REVEAL_STAGGER}
+                    translateName={(name) => translateTeamName(name, t)}
                   />
                 ))}
               </View>
@@ -288,7 +292,6 @@ export default function DivisionResultScreen() {
                 <TeamCard
                   team={team}
                   qualityLabel={t("team.quality", { value: team.total_quality })}
-                  playerCountLabel={t("team.playerCount", { count: team.player_count })}
                   rowHint={t("dnd.rowHint")}
                   hideStars={capturing}
                   onTapPlayer={(teamPlayer, sourceTeamId) => {

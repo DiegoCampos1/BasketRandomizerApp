@@ -1,3 +1,11 @@
+// Hermes ships without Intl.PluralRules — without these polyfills i18next-icu
+// silently fails and renders the raw ICU template on screen.
+import "@formatjs/intl-getcanonicallocales/polyfill";
+import "@formatjs/intl-locale/polyfill";
+import "@formatjs/intl-pluralrules/polyfill-force";
+import "@formatjs/intl-pluralrules/locale-data/en";
+import "@formatjs/intl-pluralrules/locale-data/pt";
+
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getLocales } from "expo-localization";
 import i18n from "i18next";

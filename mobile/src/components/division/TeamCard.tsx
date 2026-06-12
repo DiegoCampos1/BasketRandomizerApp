@@ -1,5 +1,6 @@
 import { LinearGradient } from "expo-linear-gradient";
 import { useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import Animated, {
   LinearTransition,
@@ -10,6 +11,7 @@ import Animated, {
 import DraggablePlayerRow from "@/components/division/dnd/DraggablePlayerRow";
 import { useDrag } from "@/components/division/dnd/DragContext";
 import AppText from "@/components/ui/AppText";
+import { translateTeamName } from "@/lib/teamNames";
 import { getTeamIdentity } from "@/theme/teamColors";
 import { colors, radius, spacing } from "@/theme/tokens";
 import type { Team, TeamPlayer } from "@/types/division";
@@ -17,7 +19,6 @@ import type { Team, TeamPlayer } from "@/types/division";
 interface TeamCardProps {
   team: Team;
   qualityLabel: string;
-  playerCountLabel: string;
   rowHint: string;
   hideStars?: boolean;
   onTapPlayer: (teamPlayer: TeamPlayer, sourceTeamId: string) => void;
@@ -26,11 +27,11 @@ interface TeamCardProps {
 export default function TeamCard({
   team,
   qualityLabel,
-  playerCountLabel,
   rowHint,
   hideStars,
   onTapPlayer,
 }: TeamCardProps) {
+  const { t } = useTranslation("division");
   const identity = getTeamIdentity(team);
   const { registerTeam, hoveredTeamId } = useDrag();
   const containerRef = useRef<View>(null);
@@ -70,22 +71,22 @@ export default function TeamCard({
           style={{
             flexDirection: "row",
             alignItems: "center",
-            justifyContent: "space-between",
             paddingHorizontal: spacing.lg,
             paddingVertical: spacing.md,
+            gap: spacing.md,
           }}
         >
-          <AppText variant="title2" color={identity.accent}>
-            {team.name}
+          <AppText
+            variant="title2"
+            color={identity.accent}
+            numberOfLines={1}
+            style={{ flex: 1 }}
+          >
+            {translateTeamName(team.name, t)}
           </AppText>
-          <View style={{ alignItems: "flex-end" }}>
-            <AppText variant="caption" tone="secondary">
-              {qualityLabel}
-            </AppText>
-            <AppText variant="caption" tone="tertiary">
-              {playerCountLabel}
-            </AppText>
-          </View>
+          <AppText variant="caption" tone="secondary" numberOfLines={1}>
+            {qualityLabel}
+          </AppText>
         </LinearGradient>
 
         <Animated.View

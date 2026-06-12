@@ -10,12 +10,14 @@ import Chip from "@/components/ui/Chip";
 import Screen from "@/components/ui/Screen";
 import { useDivision } from "@/hooks/divisions/useDivisions";
 import { currentLocale } from "@/i18n";
+import { translateTeamName } from "@/lib/teamNames";
 import { getTeamIdentity } from "@/theme/teamColors";
 import { colors, radius, spacing } from "@/theme/tokens";
 
 export default function HistoryDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { t } = useTranslation("history");
+  const { t: tDivision } = useTranslation("division");
   const router = useRouter();
   const { data: division, isLoading } = useDivision(id);
 
@@ -85,7 +87,7 @@ export default function HistoryDetailScreen() {
                 }}
               >
                 <AppText variant="title2" color={identity.accent}>
-                  {team.name}
+                  {translateTeamName(team.name, tDivision)}
                 </AppText>
                 <Chip label={t("detail.quality", { value: team.total_quality })} variant="team" color={identity.accent} />
               </LinearGradient>

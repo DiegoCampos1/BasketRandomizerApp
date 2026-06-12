@@ -3,6 +3,7 @@ import type { RefObject } from "react";
 import { Share, type View } from "react-native";
 import { captureRef } from "react-native-view-shot";
 
+import { translateTeamName } from "@/lib/teamNames";
 import { getTeamEmoji } from "@/theme/teamColors";
 import type { Division } from "@/types/division";
 import type { Position } from "@/types/player";
@@ -28,7 +29,8 @@ export function buildDivisionShareText(
         .map((tp) => `- ${tp.player.name} | ${positionLabels[tp.player.position]}`)
         .join("\n");
       const count = t("share.playerCount", { count: team.team_players.length });
-      return `\n${getTeamEmoji(team)} ${team.name} (${count})\n${playerLines}`;
+      const name = translateTeamName(team.name, t);
+      return `\n${getTeamEmoji(team)} ${name} (${count})\n${playerLines}`;
     })
     .join("\n");
 
