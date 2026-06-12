@@ -1,14 +1,13 @@
 """
-Algoritmo de divisão de times para pelada de basquete.
+Team division algorithm for pickup basketball games.
 
-Utiliza Serpentine Draft com balanceamento multi-fator:
-- Qualidade (peso 3.0)
-- Posição (peso 1.5)
-- Altura (peso 1.0)
+Uses a Serpentine Draft with multi-factor balancing:
+- Quality (weight 3.0)
+- Position (weight 1.5)
+- Height (weight 1.0)
 
-Regra rígida: pivôs são distribuídos igualitariamente (diferença máxima de 1)
-entre os lados em cada nível da divisão. Armadores e alas seguem apenas o
-balanceamento por custo.
+Hard rule: centers are split evenly (max difference of 1) between sides at
+every division level. Guards and forwards follow only the cost balancing.
 """
 
 import random

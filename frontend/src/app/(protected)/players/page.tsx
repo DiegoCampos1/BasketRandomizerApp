@@ -419,7 +419,7 @@ export default function PlayersPage() {
         )
       )}
 
-      {/* Dialog de criação/edição/aprovação */}
+      {/* Create/edit/approve dialog */}
       <Dialog
         open={dialogOpen}
         onClose={() => setDialogOpen(false)}
