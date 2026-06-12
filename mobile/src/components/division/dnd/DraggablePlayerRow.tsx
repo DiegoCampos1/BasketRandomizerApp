@@ -21,8 +21,6 @@ interface DraggablePlayerRowProps {
   onTap: () => void;
 }
 
-/* eslint-disable react-hooks/immutability, react-hooks/refs -- Reanimated shared values are
-   mutable boxes and gesture worklets run on the UI thread, not during render */
 export default function DraggablePlayerRow({
   teamPlayer,
   teamId,
@@ -129,4 +127,3 @@ export default function DraggablePlayerRow({
     </GestureDetector>
   );
 }
-/* eslint-enable react-hooks/immutability, react-hooks/refs */

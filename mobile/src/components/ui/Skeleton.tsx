@@ -13,7 +13,6 @@ function Pulse({ style }: { style?: ViewStyle }) {
   const opacity = useSharedValue(0.45);
 
   useEffect(() => {
-    /* eslint-disable-next-line react-hooks/immutability -- Reanimated shared value */
     opacity.value = withRepeat(withTiming(1, { duration: 700 }), -1, true);
   }, [opacity]);
 

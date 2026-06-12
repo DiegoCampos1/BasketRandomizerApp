@@ -109,7 +109,6 @@ export function DragProvider({
     [onScrollEnabledChange]
   );
 
-  /* eslint-disable react-hooks/immutability -- Reanimated shared values are mutable boxes */
   const startDrag = useCallback(
     (drag: ActiveDrag, _grabX: number, _grabY: number) => {
       // Measure all team zones in window coordinates at drag start; during
@@ -155,7 +154,6 @@ export function DragProvider({
     },
     [dragging, onMove, onScrollEnabledChange, dragActive, hoveredTeamId]
   );
-  /* eslint-enable react-hooks/immutability */
 
   const notifyHoverChange = useCallback(() => {
     Haptics.selectionAsync();

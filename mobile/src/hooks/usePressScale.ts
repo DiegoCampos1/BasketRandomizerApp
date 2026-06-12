@@ -14,14 +14,12 @@ export function usePressScale(pressedScale: number) {
     transform: [{ scale: scale.value }],
   }));
 
-  /* eslint-disable react-hooks/immutability */
   const onPressIn = () => {
     scale.value = withSpring(pressedScale, springs.snappy);
   };
   const onPressOut = () => {
     scale.value = withSpring(1, springs.snappy);
   };
-  /* eslint-enable react-hooks/immutability */
 
   return { animatedStyle, onPressIn, onPressOut };
 }
