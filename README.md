@@ -2,9 +2,13 @@
 
 A full-stack web app that builds **fair, balanced teams for pickup basketball games** — no more endless arguing at the court about who plays with whom.
 
-Players are registered with a position, a skill rating and their height. When game day comes, you pick who showed up, choose a format, and a multi-factor draft algorithm splits everyone into balanced teams in one click — with drag-and-drop fine-tuning, shareable results and full division history.
+## 🌐 Live in Production
 
-Built for and battle-tested with a real organization (**Boomerangs Basketball**), running in production.
+**The app is live at [draftsquad.up.railway.app](https://draftsquad.up.railway.app/)** — deployed on Railway and used every week by a real organization (**Boomerangs Basketball**) to draw its game-day teams.
+
+---
+
+Players are registered with a position, a skill rating and their height. When game day comes, you pick who showed up, choose a format, and a multi-factor draft algorithm splits everyone into balanced teams in one click — with drag-and-drop fine-tuning, shareable results and full division history.
 
 ---
 
