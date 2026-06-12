@@ -76,6 +76,8 @@ export default function RootLayout() {
               <Stack.Protected guard={isAuthenticated}>
                 <Stack.Screen name="(tabs)" />
                 <Stack.Screen name="division/[id]" />
+                <Stack.Screen name="history/[id]" />
+                <Stack.Screen name="notifications" options={{ presentation: "modal" }} />
               </Stack.Protected>
               <Stack.Protected guard={!isAuthenticated}>
                 <Stack.Screen name="(auth)" />

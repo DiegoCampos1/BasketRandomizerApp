@@ -2,10 +2,12 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { Tabs } from "expo-router";
 import { useTranslation } from "react-i18next";
 
+import { useNotificationSocket } from "@/hooks/notifications/useNotificationSocket";
 import { colors, fonts } from "@/theme/tokens";
 
 export default function TabsLayout() {
   const { t } = useTranslation("layout");
+  useNotificationSocket();
 
   return (
     <Tabs

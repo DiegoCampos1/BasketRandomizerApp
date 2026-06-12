@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Pressable, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
+import NotificationBell from "@/components/layout/NotificationBell";
 import AppText from "@/components/ui/AppText";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
@@ -35,15 +36,18 @@ export default function DashboardScreen() {
             </AppText>
             <AppText variant="display">{t("greeting", { name: firstName })}</AppText>
           </View>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={tl("logout")}
-            onPress={() => logout()}
-            hitSlop={8}
-            style={{ padding: spacing.sm }}
-          >
-            <Ionicons name="log-out-outline" size={24} color={colors.text.secondary} />
-          </Pressable>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <NotificationBell />
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={tl("logout")}
+              onPress={() => logout()}
+              hitSlop={8}
+              style={{ padding: spacing.sm }}
+            >
+              <Ionicons name="log-out-outline" size={24} color={colors.text.secondary} />
+            </Pressable>
+          </View>
         </View>
         <Card>
           <AppText variant="stat" tabular>
