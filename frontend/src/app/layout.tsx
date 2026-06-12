@@ -22,7 +22,7 @@ const barlowCondensed = Barlow_Condensed({
 });
 
 export const metadata: Metadata = {
-  title: "Sorteador de Times",
+  title: "Draft Squad",
   description: "Divisão equilibrada de times para peladas esportivas",
 };
 

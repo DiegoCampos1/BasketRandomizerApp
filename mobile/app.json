@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "Sorteador de Times",
-    "slug": "sorteador-de-times",
+    "name": "Draft Squad",
+    "slug": "draft-squad",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "sorteadortimes",
+    "scheme": "draftsquad",
     "userInterfaceStyle": "dark",
     "backgroundColor": "#0A0A0F",
     "ios": {

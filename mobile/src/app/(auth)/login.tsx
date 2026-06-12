@@ -62,7 +62,7 @@ export default function LoginScreen() {
       >
           <View style={{ gap: spacing["2xl"] }}>
             <Animated.View entering={FadeInDown.duration(320)}>
-              <AppText variant="displayXl">{"Sorteador\nde Times"}</AppText>
+              <AppText variant="displayXl">{"Draft\nSquad"}</AppText>
               <View
                 style={{
                   width: 64,
