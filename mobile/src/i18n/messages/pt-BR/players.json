@@ -43,5 +43,6 @@
     "buttonApprove": "Aprovar",
     "buttonSave": "Salvar",
     "buttonCreate": "Criar"
-  }
+  },
+  "deleteButton": "Excluir jogador"
 }

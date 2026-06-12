@@ -43,5 +43,6 @@
     "buttonApprove": "Approve",
     "buttonSave": "Save",
     "buttonCreate": "Create"
-  }
+  },
+  "deleteButton": "Delete player"
 }
