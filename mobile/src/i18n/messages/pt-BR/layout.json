@@ -1,0 +1,21 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "players": "Jogadores",
+    "divideTeams": "Dividir Times",
+    "history": "Histórico"
+  },
+  "logout": "Sair",
+  "pageTitles": {
+    "dashboard": "Dashboard",
+    "players": "Jogadores",
+    "divideTeams": "Dividir Times",
+    "history": "Histórico",
+    "divisionDetail": "Detalhes da Divisão"
+  },
+  "notifications": {
+    "title": "Notificações",
+    "markAllRead": "Marcar todas como lidas",
+    "empty": "Nenhuma notificação"
+  }
+}

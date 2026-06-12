@@ -1,0 +1,49 @@
+{
+  "title": "Divide Teams",
+  "resultTitle": "Divided Teams",
+  "newDivision": "New Division",
+  "savedSuccess": "Division saved successfully!",
+  "modeLabel": "Division mode",
+  "twoTeams": "2 Teams",
+  "fourTeams": "4 Teams (2 groups)",
+  "presentPlayers": "Present players ({selected}/{max} selected)",
+  "selectAll": "Select all",
+  "clear": "Clear",
+  "search": {
+    "placeholder": "Search player by name...",
+    "clear": "Clear search",
+    "noResults": "No players found for \"{query}\""
+  },
+  "divideButton": "Divide Teams",
+  "tips": {
+    "title": "How does the division work?",
+    "algorithm": "We use a serpentine draft algorithm that balances teams by quality (weight 3.0), position (1.5), and height (1.0).",
+    "tallCenters": "Tall centers with similar quality are automatically placed on different teams.",
+    "modes": "In 4-team mode, 2 groups (Red/Black) are created with 2 subteams each — the score carries over between games.",
+    "adjust": "After the division, you can manually adjust by swapping players between teams."
+  },
+  "dividing": "Dividing...",
+  "team": {
+    "quality": "Quality: {value}",
+    "playerCount": "{count, plural, one {# player} other {# players}}"
+  },
+  "errors": {
+    "maxPlayers": "Maximum of {max} players per division.",
+    "maxSelected": "Maximum of {max} players. Only the first {max} were selected.",
+    "minPlayers": "Select at least {min} players for {teams} teams.",
+    "divisionError": "Error dividing teams.",
+    "swapError": "Error swapping players.",
+    "moveError": "Error moving player. Please try again."
+  },
+  "dnd": {
+    "hint": "Drag players between teams to adjust"
+  },
+  "share": {
+    "screenshot": "Copy image",
+    "copyText": "Copy text",
+    "imageCopied": "Image copied!",
+    "textCopied": "Text copied!",
+    "textHeader": "Teams - {date}",
+    "playerCount": "{count, plural, one {# player} other {# players}}"
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "title": "Dividir Times",
+  "resultTitle": "Times Divididos",
+  "newDivision": "Nova Divisão",
+  "savedSuccess": "Divisão salva com sucesso!",
+  "modeLabel": "Modo de divisão",
+  "twoTeams": "2 Times",
+  "fourTeams": "4 Times (2 grupos)",
+  "presentPlayers": "Jogadores presentes ({selected}/{max} selecionados)",
+  "selectAll": "Selecionar todos",
+  "clear": "Limpar",
+  "search": {
+    "placeholder": "Buscar jogador pelo nome...",
+    "clear": "Limpar busca",
+    "noResults": "Nenhum jogador encontrado para \"{query}\""
+  },
+  "divideButton": "Dividir Times",
+  "tips": {
+    "title": "Como funciona a divisão?",
+    "algorithm": "Usamos um algoritmo de draft serpentina que balanceia os times considerando qualidade (peso 3.0), posição (1.5) e altura (1.0).",
+    "tallCenters": "Pivôs altos com qualidade parecida são automaticamente separados em times diferentes.",
+    "modes": "No modo 4 times, são criados 2 grupos (Vermelho/Preto) com 2 subtimes cada — o placar é acumulativo entre os jogos.",
+    "adjust": "Após a divisão, você pode ajustar manualmente trocando jogadores entre os times."
+  },
+  "dividing": "Dividindo...",
+  "team": {
+    "quality": "Qualidade: {value}",
+    "playerCount": "{count, plural, one {# jogador} other {# jogadores}}"
+  },
+  "errors": {
+    "maxPlayers": "Máximo de {max} jogadores por divisão.",
+    "maxSelected": "Máximo de {max} jogadores. Apenas os {max} primeiros foram selecionados.",
+    "minPlayers": "Selecione pelo menos {min} jogadores para {teams} times.",
+    "divisionError": "Erro ao dividir times.",
+    "swapError": "Erro ao trocar jogadores.",
+    "moveError": "Erro ao mover jogador. Tente novamente."
+  },
+  "dnd": {
+    "hint": "Arraste jogadores entre os times para ajustar"
+  },
+  "share": {
+    "screenshot": "Copiar imagem",
+    "copyText": "Copiar texto",
+    "imageCopied": "Imagem copiada!",
+    "textCopied": "Texto copiado!",
+    "textHeader": "Times - {date}",
+    "playerCount": "{count, plural, one {# jogador} other {# jogadores}}"
+  }
+}

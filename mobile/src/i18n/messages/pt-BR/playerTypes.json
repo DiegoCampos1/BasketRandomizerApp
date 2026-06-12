@@ -1,0 +1,12 @@
+{
+  "positions": {
+    "guard": "Armador",
+    "forward": "Ala",
+    "center": "Pivô"
+  },
+  "heightCategories": {
+    "small": "Baixo",
+    "medium": "Médio",
+    "tall": "Alto"
+  }
+}
