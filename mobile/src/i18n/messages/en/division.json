@@ -36,7 +36,8 @@
     "moveError": "Error moving player. Please try again."
   },
   "dnd": {
-    "hint": "Drag players between teams to adjust"
+    "hint": "Drag players between teams to adjust",
+    "rowHint": "Tap to move between teams, hold and drag"
   },
   "share": {
     "screenshot": "Copy image",
@@ -45,5 +46,9 @@
     "textCopied": "Text copied!",
     "textHeader": "Teams - {date}",
     "playerCount": "{count, plural, one {# player} other {# players}}"
+  },
+  "move": {
+    "title": "Move {name} to...",
+    "toTeam": "Move to {team}"
   }
 }

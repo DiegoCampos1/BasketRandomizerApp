@@ -36,7 +36,8 @@
     "moveError": "Erro ao mover jogador. Tente novamente."
   },
   "dnd": {
-    "hint": "Arraste jogadores entre os times para ajustar"
+    "hint": "Arraste jogadores entre os times para ajustar",
+    "rowHint": "Toque para mover de time, segure e arraste"
   },
   "share": {
     "screenshot": "Copiar imagem",
@@ -45,5 +46,9 @@
     "textCopied": "Texto copiado!",
     "textHeader": "Times - {date}",
     "playerCount": "{count, plural, one {# jogador} other {# jogadores}}"
+  },
+  "move": {
+    "title": "Mover {name} para...",
+    "toTeam": "Mover para {team}"
   }
 }
