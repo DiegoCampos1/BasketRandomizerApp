@@ -14,6 +14,7 @@ import Button from "@/components/ui/Button";
 import Chip from "@/components/ui/Chip";
 import SearchBar from "@/components/ui/SearchBar";
 import Screen from "@/components/ui/Screen";
+import { SkeletonList } from "@/components/ui/Skeleton";
 import { usePlayers } from "@/hooks/players/usePlayers";
 import { matchesQuery } from "@/lib/text";
 import { useAuthStore } from "@/stores/authStore";
@@ -27,7 +28,7 @@ type Row =
 export default function PlayersScreen() {
   const { t } = useTranslation("players");
   const user = useAuthStore((s) => s.user);
-  const { data: players = [], isRefetching, refetch } = usePlayers();
+  const { data: players = [], isLoading, isRefetching, refetch } = usePlayers();
   const [search, setSearch] = useState("");
   const [editingPlayer, setEditingPlayer] = useState<Player | null>(null);
   const sheetRef = useRef<BottomSheetModal>(null);
@@ -149,7 +150,9 @@ export default function PlayersScreen() {
         />
       </View>
 
-      {players.length === 0 ? (
+      {isLoading ? (
+        <SkeletonList />
+      ) : players.length === 0 ? (
         <View
           style={{
             flex: 1,
