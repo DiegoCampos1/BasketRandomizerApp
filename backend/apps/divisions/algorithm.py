@@ -5,6 +5,10 @@ Utiliza Serpentine Draft com balanceamento multi-fator:
 - Qualidade (peso 3.0)
 - Posição (peso 1.5)
 - Altura (peso 1.0)
+
+Regra rígida: pivôs são distribuídos igualitariamente (diferença máxima de 1)
+entre os lados em cada nível da divisão. Armadores e alas seguem apenas o
+balanceamento por custo.
 """
 
 from dataclasses import dataclass, field
@@ -69,6 +73,29 @@ def _compute_placement_cost(
     )
 
 
+def _eligible_team_indexes(
+    player: PlayerProfile,
+    teams: list[TeamSlot],
+    target_sizes: list[int] | None = None,
+) -> set[int]:
+    """
+    Indexes of teams this player may be placed on.
+
+    Teams must have room under target_sizes (when given). When the player is a
+    center, only the teams with the minimum current center count among those
+    with room are eligible, enforcing an even center split (diff <= 1).
+    """
+    indexes = [
+        i
+        for i in range(len(teams))
+        if target_sizes is None or len(teams[i].players) < target_sizes[i]
+    ]
+    if indexes and player.position == "center":
+        min_centers = min(teams[i].count_position("center") for i in indexes)
+        indexes = [i for i in indexes if teams[i].count_position("center") == min_centers]
+    return set(indexes)
+
+
 def _pre_assign_tall_centers(
     players: list[PlayerProfile], teams: list[TeamSlot]
 ) -> list[PlayerProfile]:
@@ -121,10 +148,14 @@ def _serpentine_draft(players: list[PlayerProfile], teams: list[TeamSlot]):
         else:
             team_order = list(range(num_teams - 1, -1, -1))
 
+        eligible = _eligible_team_indexes(player, teams)
+
         best_team = None
         best_cost = float("inf")
 
         for team_idx in team_order:
+            if team_idx not in eligible:
+                continue
             team = teams[team_idx]
             cost = _compute_placement_cost(team, player, teams)
             if cost < best_cost:
@@ -146,16 +177,20 @@ def _balanced_draft_with_sizes(
     Draft players to teams respecting target_sizes (hard cap per team) while
     minimizing the placement cost (quality, position, height).
 
-    Players already present in teams (e.g. pre-assigned) count toward the cap.
+    Centers are drafted first so the even center split is as good as the caps
+    allow. Players already present in teams (e.g. pre-assigned) count toward
+    both the cap and the center counts.
     """
-    players_sorted = sorted(players, key=_draft_sort_key)
+    centers = [p for p in players if p.position == "center"]
+    others = [p for p in players if p.position != "center"]
+    players_sorted = sorted(centers, key=_draft_sort_key) + sorted(others, key=_draft_sort_key)
 
     for player in players_sorted:
+        eligible = _eligible_team_indexes(player, teams, target_sizes)
         best_team = None
         best_cost = float("inf")
-        for idx, team in enumerate(teams):
-            if len(team.players) >= target_sizes[idx]:
-                continue
+        for idx in sorted(eligible):
+            team = teams[idx]
             cost = _compute_placement_cost(team, player, teams)
             if cost < best_cost:
                 best_cost = cost

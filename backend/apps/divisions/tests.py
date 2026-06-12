@@ -225,6 +225,258 @@ class FourTeamSubteam1SizeTest(TestCase):
         self.assertLessEqual(max(sizes.values()) - min(sizes.values()), 1)
 
 
+class CenterBalanceTestMixin:
+    """Shared helpers for center distribution tests."""
+
+    def _create_player(self, name, quality=3, position="guard", height_cm=180):
+        return Player.objects.create(
+            name=name,
+            quality=quality,
+            position=position,
+            height_cm=height_cm,
+            organization=self.org,
+            is_approved=True,
+        )
+
+    def _center_counts(self, division):
+        return {
+            team.name: sum(
+                1
+                for tp in team.team_players.select_related("player")
+                if tp.player.position == "center"
+            )
+            for team in division.teams.all()
+        }
+
+
+class TwoTeamCenterBalanceTest(CenterBalanceTestMixin, TestCase):
+    """Centers must be split evenly (diff <= 1) between the 2 teams."""
+
+    def setUp(self):
+        self.org = Organization.objects.create(name="Org 2T Centers")
+        self.user = User.objects.create_user(
+            username="centers2t",
+            email="centers2t@test.com",
+            password="Test@1234",
+            organization=self.org,
+        )
+
+    def test_four_centers_split_two_two(self):
+        """Mixed heights/qualities so the tall-center pre-assignment does not apply."""
+        players = [
+            self._create_player("C1", quality=5, position="center", height_cm=195),
+            self._create_player("C2", quality=4, position="center", height_cm=180),
+            self._create_player("C3", quality=3, position="center", height_cm=192),
+            self._create_player("C4", quality=2, position="center", height_cm=180),
+            self._create_player("G1", quality=5, position="guard", height_cm=175),
+            self._create_player("G2", quality=3, position="guard", height_cm=175),
+            self._create_player("G3", quality=1, position="guard", height_cm=175),
+            self._create_player("F1", quality=4, position="forward", height_cm=183),
+            self._create_player("F2", quality=3, position="forward", height_cm=183),
+            self._create_player("F3", quality=2, position="forward", height_cm=183),
+        ]
+        division = create_division(self.user, [p.id for p in players], "2_teams", "2026-06-12")
+        counts = self._center_counts(division)
+        self.assertEqual(sorted(counts.values()), [2, 2])
+
+    def test_five_centers_split_three_two(self):
+        players = (
+            [
+                self._create_player(f"C{i}", quality=q, position="center", height_cm=h)
+                for i, (q, h) in enumerate([(5, 195), (4, 180), (3, 192), (2, 180), (1, 190)])
+            ]
+            + [
+                self._create_player(f"G{i}", quality=q, position="guard", height_cm=175)
+                for i, q in enumerate([5, 4, 3])
+            ]
+            + [
+                self._create_player(f"F{i}", quality=q, position="forward", height_cm=183)
+                for i, q in enumerate([4, 2, 1])
+            ]
+        )
+        division = create_division(self.user, [p.id for p in players], "2_teams", "2026-06-12")
+        counts = self._center_counts(division)
+        self.assertEqual(sorted(counts.values()), [2, 3])
+
+    def test_no_centers_still_works(self):
+        players = [
+            self._create_player(f"G{i}", quality=(i % 5) + 1, position="guard") for i in range(4)
+        ] + [
+            self._create_player(f"F{i}", quality=(i % 5) + 1, position="forward") for i in range(4)
+        ]
+        division = create_division(self.user, [p.id for p in players], "2_teams", "2026-06-12")
+        counts = self._center_counts(division)
+        self.assertEqual(sorted(counts.values()), [0, 0])
+
+    def test_all_centers_split_evenly(self):
+        players = [
+            self._create_player(f"C{i}", quality=(i % 5) + 1, position="center", height_cm=190)
+            for i in range(8)
+        ]
+        division = create_division(self.user, [p.id for p in players], "2_teams", "2026-06-12")
+        counts = self._center_counts(division)
+        self.assertEqual(sorted(counts.values()), [4, 4])
+        sizes = sorted(team.team_players.count() for team in division.teams.all())
+        self.assertEqual(sizes, [4, 4])
+
+    def test_tall_center_pre_assignment_compatible(self):
+        """A pre-assigned tall pair plus a third center must still split [1, 2]."""
+        players = [
+            self._create_player("Tall A", quality=5, position="center", height_cm=200),
+            self._create_player("Tall B", quality=5, position="center", height_cm=198),
+            self._create_player("Mid C", quality=3, position="center", height_cm=182),
+            self._create_player("G1", quality=4, position="guard", height_cm=175),
+            self._create_player("G2", quality=3, position="guard", height_cm=175),
+            self._create_player("F1", quality=4, position="forward", height_cm=183),
+            self._create_player("F2", quality=2, position="forward", height_cm=183),
+            self._create_player("F3", quality=1, position="forward", height_cm=183),
+        ]
+        division = create_division(self.user, [p.id for p in players], "2_teams", "2026-06-12")
+        counts = self._center_counts(division)
+        self.assertEqual(sorted(counts.values()), [1, 2])
+
+
+class FourTeamCenterBalanceTest(CenterBalanceTestMixin, TestCase):
+    """Centers must be split evenly between groups and between subteams."""
+
+    def setUp(self):
+        self.org = Organization.objects.create(name="Org 4T Centers")
+        self.user = User.objects.create_user(
+            username="centers4t",
+            email="centers4t@test.com",
+            password="Test@1234",
+            organization=self.org,
+        )
+
+    def _group_center_counts(self, division):
+        groups = {}
+        for team in division.teams.all():
+            centers = sum(
+                1
+                for tp in team.team_players.select_related("player")
+                if tp.player.position == "center"
+            )
+            groups[team.group] = groups.get(team.group, 0) + centers
+        return groups
+
+    def _group_qualities(self, division):
+        groups = {}
+        for team in division.teams.all():
+            quality = sum(tp.player.quality for tp in team.team_players.select_related("player"))
+            groups[team.group] = groups.get(team.group, 0) + quality
+        return groups
+
+    def _production_roster(self):
+        """
+        15 players with 4 tall centers — mirrors the real division that went 3x1.
+
+        This exact roster reproduces the bug on the pre-fix algorithm: groups
+        split centers 3/1 and the V2xP2 matchup got 2 centers vs 0.
+        """
+        centers = [
+            self._create_player(f"C{i}", quality=q, position="center", height_cm=h)
+            for i, (q, h) in enumerate([(5, 195), (5, 193), (5, 190), (3, 192)])
+        ]
+        guards = [
+            self._create_player(f"G{i}", quality=q, position="guard", height_cm=175)
+            for i, q in enumerate([5, 5, 2, 1])
+        ]
+        forwards = [
+            self._create_player(f"F{i}", quality=q, position="forward", height_cm=183)
+            for i, q in enumerate([4, 4, 3, 3, 2, 2, 1])
+        ]
+        return centers + guards + forwards
+
+    def test_regression_fifteen_players_four_centers(self):
+        """Production regression: groups must get 2 centers each, never 3x1."""
+        players = self._production_roster()
+        division = create_division(self.user, [p.id for p in players], "4_teams", "2026-06-12")
+
+        group_centers = self._group_center_counts(division)
+        self.assertEqual(group_centers.get("vermelho"), 2)
+        self.assertEqual(group_centers.get("preto"), 2)
+
+        counts = self._center_counts(division)
+        for name in ["Vermelho 1", "Vermelho 2", "Preto 1", "Preto 2"]:
+            self.assertEqual(counts.get(name), 1, f"{name} should have exactly 1 center")
+
+        sizes = {t.name: t.team_players.count() for t in division.teams.all()}
+        self.assertEqual(sizes.get("Vermelho 1"), 5)
+        self.assertEqual(sizes.get("Preto 1"), 5)
+        self.assertEqual(sizes.get("Vermelho 2"), 3)
+        self.assertEqual(sizes.get("Preto 2"), 2)
+
+        qualities = self._group_qualities(division)
+        self.assertLessEqual(abs(qualities["vermelho"] - qualities["preto"]), 3)
+
+    def test_odd_centers_groups_within_one(self):
+        players = (
+            [
+                self._create_player(f"C{i}", quality=q, position="center", height_cm=h)
+                for i, (q, h) in enumerate([(5, 195), (4, 193), (3, 190), (2, 192), (1, 180)])
+            ]
+            + [
+                self._create_player(f"G{i}", quality=q, position="guard", height_cm=175)
+                for i, q in enumerate([5, 4, 3, 2, 1])
+            ]
+            + [
+                self._create_player(f"F{i}", quality=q, position="forward", height_cm=183)
+                for i, q in enumerate([5, 4, 3, 2, 1])
+            ]
+        )
+        division = create_division(self.user, [p.id for p in players], "4_teams", "2026-06-12")
+
+        group_centers = self._group_center_counts(division)
+        self.assertEqual(sorted(group_centers.values()), [2, 3])
+
+        counts = self._center_counts(division)
+        for group in ["Vermelho", "Preto"]:
+            sub1 = counts.get(f"{group} 1", 0)
+            sub2 = counts.get(f"{group} 2", 0)
+            self.assertLessEqual(abs(sub1 - sub2), 1, f"{group} subteams differ by more than 1")
+
+    def test_many_centers_cap_conflict(self):
+        """12 players / 8 centers with sub sizes (5,1,5,1): best split the caps allow."""
+        players = [
+            self._create_player(f"C{i}", quality=(i % 5) + 1, position="center", height_cm=190)
+            for i in range(8)
+        ] + [
+            self._create_player(f"G{i}", quality=(i % 5) + 1, position="guard", height_cm=175)
+            for i in range(4)
+        ]
+        division = create_division(self.user, [p.id for p in players], "4_teams", "2026-06-12")
+
+        group_centers = self._group_center_counts(division)
+        self.assertEqual(sorted(group_centers.values()), [4, 4])
+
+        counts = self._center_counts(division)
+        for name in ["Vermelho 2", "Preto 2"]:
+            self.assertEqual(counts.get(name), 1, f"{name} (size 1) should hold 1 center")
+        for name in ["Vermelho 1", "Preto 1"]:
+            self.assertEqual(counts.get(name), 3, f"{name} should hold the other 3 centers")
+
+    def test_no_centers_four_teams(self):
+        players = [
+            self._create_player(f"G{i}", quality=(i % 5) + 1, position="guard") for i in range(6)
+        ] + [
+            self._create_player(f"F{i}", quality=(i % 5) + 1, position="forward") for i in range(6)
+        ]
+        division = create_division(self.user, [p.id for p in players], "4_teams", "2026-06-12")
+        counts = self._center_counts(division)
+        self.assertEqual(sorted(counts.values()), [0, 0, 0, 0])
+        total = sum(t.team_players.count() for t in division.teams.all())
+        self.assertEqual(total, 12)
+
+    def test_all_centers_eight_players(self):
+        players = [
+            self._create_player(f"C{i}", quality=(i % 5) + 1, position="center", height_cm=190)
+            for i in range(8)
+        ]
+        division = create_division(self.user, [p.id for p in players], "4_teams", "2026-06-12")
+        counts = self._center_counts(division)
+        self.assertEqual(sorted(counts.values()), [2, 2, 2, 2])
+
+
 class MovePlayerTest(TestCase):
     """Tests for the move_player service."""
 
