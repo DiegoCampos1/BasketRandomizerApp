@@ -201,6 +201,50 @@ def _balanced_draft_with_sizes(
         best_team.players.append(player)
 
 
+def _balance_matchup_quality(teams: list[TeamSlot], max_iterations: int = 30) -> None:
+    """
+    Narrow the quality gap of the matchups V1xP1 and V2xP2 by swapping players
+    between the subteams of the same group.
+
+    Swaps are 1-for-1 within a group, so team sizes and group totals stay
+    intact. Centers only swap with centers (and non-centers with non-centers),
+    preserving the even center split.
+    """
+    v1, v2, p1, p2 = teams
+
+    def matchup_gap(qv1: int, qv2: int, qp1: int, qp2: int) -> int:
+        return abs(qv1 - qp1) + abs(qv2 - qp2)
+
+    for _ in range(max_iterations):
+        qv1, qv2 = v1.total_quality, v2.total_quality
+        qp1, qp2 = p1.total_quality, p2.total_quality
+        best_gap = matchup_gap(qv1, qv2, qp1, qp2)
+        best_swap = None
+
+        for sub_a, sub_b in ((v1, v2), (p1, p2)):
+            for player_a in sub_a.players:
+                for player_b in sub_b.players:
+                    if (player_a.position == "center") != (player_b.position == "center"):
+                        continue
+                    delta = player_b.quality - player_a.quality
+                    if sub_a is v1:
+                        gap = matchup_gap(qv1 + delta, qv2 - delta, qp1, qp2)
+                    else:
+                        gap = matchup_gap(qv1, qv2, qp1 + delta, qp2 - delta)
+                    if gap < best_gap:
+                        best_gap = gap
+                        best_swap = (sub_a, player_a, sub_b, player_b)
+
+        if best_swap is None:
+            return
+
+        sub_a, player_a, sub_b, player_b = best_swap
+        sub_a.players.remove(player_a)
+        sub_b.players.remove(player_b)
+        sub_a.players.append(player_b)
+        sub_b.players.append(player_a)
+
+
 def _compute_four_team_target_sizes(total: int) -> tuple[list[int], tuple[int, int, int, int]]:
     """
     Compute group and subteam target sizes for 4-team mode.
@@ -274,6 +318,8 @@ def divide_four_teams(players: list[PlayerProfile]) -> list[TeamSlot]:
 
         _balanced_draft_with_sizes(group_players, sub_teams, [sub1_size, sub2_size])
         final_teams.extend(sub_teams)
+
+    _balance_matchup_quality(final_teams)
 
     return final_teams
 

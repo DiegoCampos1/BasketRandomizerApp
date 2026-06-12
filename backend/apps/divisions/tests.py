@@ -4,6 +4,7 @@ from rest_framework.test import APIClient
 from apps.accounts.models import Organization, User
 from apps.players.models import Player
 
+from .algorithm import PlayerProfile, TeamSlot, _balance_matchup_quality
 from .models import Team, TeamPlayer
 from .services import create_division, move_player
 
@@ -475,6 +476,100 @@ class FourTeamCenterBalanceTest(CenterBalanceTestMixin, TestCase):
         division = create_division(self.user, [p.id for p in players], "4_teams", "2026-06-12")
         counts = self._center_counts(division)
         self.assertEqual(sorted(counts.values()), [2, 2, 2, 2])
+
+
+class MatchupQualityBalanceTest(TestCase):
+    """The post-pass narrows the quality gap of the V1xP1 and V2xP2 matchups."""
+
+    @staticmethod
+    def _profile(player_id, quality, position="guard"):
+        height = 190.0 if position == "center" else 180.0
+        category = "tall" if position == "center" else "medium"
+        return PlayerProfile(player_id, quality, position, category, height)
+
+    @staticmethod
+    def _matchup_gap(teams):
+        v1, v2, p1, p2 = teams
+        return abs(v1.total_quality - p1.total_quality) + abs(v2.total_quality - p2.total_quality)
+
+    def test_swaps_reduce_matchup_gap_preserving_sizes_and_centers(self):
+        v1 = TeamSlot(
+            name="Vermelho 1",
+            group="vermelho",
+            players=[
+                self._profile("vg1", 5),
+                self._profile("vg2", 5),
+                self._profile("vc1", 4, "center"),
+            ],
+        )
+        v2 = TeamSlot(
+            name="Vermelho 2",
+            group="vermelho",
+            players=[self._profile("vg3", 1), self._profile("vc2", 1, "center")],
+        )
+        p1 = TeamSlot(
+            name="Preto 1",
+            group="preto",
+            players=[
+                self._profile("pg1", 2),
+                self._profile("pg2", 2),
+                self._profile("pc1", 2, "center"),
+            ],
+        )
+        p2 = TeamSlot(
+            name="Preto 2",
+            group="preto",
+            players=[self._profile("pg3", 4), self._profile("pc2", 4, "center")],
+        )
+        teams = [v1, v2, p1, p2]
+        gap_before = self._matchup_gap(teams)
+
+        _balance_matchup_quality(teams)
+
+        gap_after = self._matchup_gap(teams)
+        self.assertLess(gap_after, gap_before)
+        self.assertLessEqual(gap_after, 2)
+        self.assertEqual([len(t.players) for t in teams], [3, 2, 3, 2])
+        for team in teams:
+            centers = sum(1 for p in team.players if p.position == "center")
+            self.assertEqual(centers, 1, f"{team.name} center count changed")
+        group_v = v1.total_quality + v2.total_quality
+        group_p = p1.total_quality + p2.total_quality
+        self.assertEqual(group_v, 16)
+        self.assertEqual(group_p, 14)
+
+    def test_service_division_has_balanced_matchups(self):
+        org = Organization.objects.create(name="Org Matchup")
+        user = User.objects.create_user(
+            username="matchup",
+            email="matchup@test.com",
+            password="Test@1234",
+            organization=org,
+        )
+
+        def create(name, quality, position, height_cm):
+            return Player.objects.create(
+                name=name,
+                quality=quality,
+                position=position,
+                height_cm=height_cm,
+                organization=org,
+                is_approved=True,
+            )
+
+        players = (
+            [create(f"C{i}", q, "center", 192) for i, q in enumerate([5, 4, 2, 1])]
+            + [create(f"G{i}", q, "guard", 175) for i, q in enumerate([5, 5, 4, 2, 1])]
+            + [create(f"F{i}", q, "forward", 183) for i, q in enumerate([5, 3, 3, 2, 1])]
+        )
+        division = create_division(user, [p.id for p in players], "4_teams", "2026-06-12")
+
+        qualities = {
+            team.name: sum(tp.player.quality for tp in team.team_players.select_related("player"))
+            for team in division.teams.all()
+        }
+        self.assertLessEqual(abs(qualities["Vermelho 1"] - qualities["Preto 1"]), 3)
+        self.assertLessEqual(abs(qualities["Vermelho 2"] - qualities["Preto 2"]), 3)
 
 
 class MovePlayerTest(TestCase):
